@@ -1,0 +1,175 @@
+@import "tailwindcss";
+
+@theme {
+    --font-sans: "Inter", "system-ui", sans-serif;
+    --font-display: "Outfit", "system-ui", sans-serif;
+    --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+
+    /* Base Palette (Custom Seaside / Lavender Theme) 
+       Color 1: #080205 (Deep Noir - Darkest Foreground)
+       Color 2: #9FBCAD (Sage / Mint Green)
+       Color 3: #7A9DB1 (Coastal Slate Blue)
+       Color 4: #9681AC (Soft Lavender)
+    */
+    --color-slate-50: #f6f9f7;
+    --color-slate-100: #eaf2ec;
+    --color-slate-200: #d5e3da;
+    --color-slate-300: #b8cec2;
+    --color-slate-400: #a3bea8;
+    --color-slate-500: #9fbcad; /* Color 2 - Sage */
+    --color-slate-600: #829f90;
+    --color-slate-700: #6a8276;
+    --color-slate-800: #56685f;
+    --color-slate-900: #48544e;
+    --color-slate-950: #080205; /* Color 1 - Deep Noir */
+
+    --color-blue-50: #f5f7f9;
+    --color-blue-100: #e6ebf0;
+    --color-blue-200: #cbd7e1;
+    --color-blue-300: #a9bed0;
+    --color-blue-400: #8aa3b8;
+    --color-blue-500: #7a9db1; /* Color 3 - Slate Blue */
+    --color-blue-600: #608195;
+    --color-blue-700: #4e697b;
+    --color-blue-800: #415766;
+    --color-blue-900: #384955;
+
+    --color-sky-50: #f7f5f9;
+    --color-sky-100: #ebe6f0;
+    --color-sky-200: #d8cee0;
+    --color-sky-300: #c1afcd;
+    --color-sky-400: #aa95b9;
+    --color-sky-500: #9681ac; /* Color 4 - Lavender */
+    --color-sky-600: #7f6897;
+    --color-sky-700: #69547d;
+    --color-sky-800: #574767;
+    --color-sky-900: #4a3e56;
+}
+
+@layer base {
+    :root {
+        --background: #fbfcfc;
+        --page-bg: #fbfcfc;
+        --foreground: #080205; /* Deep Noir */
+        --card-bg: #ffffff;
+        --card-border: #d5e3da; /* Sage 200 */
+        --muted: #6a8276; /* Sage 700 */
+        --muted-bg: #f6f9f7; /* Sage 50 */
+        --nav-bg: rgba(255, 255, 255, 0.9);
+        --accent-blue: #4e697b; /* Blue 700 */
+        --accent-sky: #69547d; /* Sky 700 */
+        --input-bg: #ffffff;
+        --input-border: #9fbcad; /* Sage 500 */
+    }
+
+    * {
+        box-sizing: border-box;
+        border-color: var(--card-border);
+    }
+
+    body {
+        @apply bg-[var(--page-bg)] text-[var(--foreground)] antialiased min-h-screen transition-colors duration-300;
+        font-family: var(--font-sans);
+        font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        background-image: radial-gradient(circle at 15% 50%, rgba(122, 157, 177, 0.08), transparent 35%),
+                          radial-gradient(circle at 85% 30%, rgba(150, 129, 172, 0.08), transparent 35%);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: var(--font-display);
+        @apply font-bold tracking-tight text-[var(--foreground)] transition-colors duration-300;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply bg-[var(--accent-blue)] hover:bg-[var(--accent-sky)] rounded-full transition-colors;
+    }
+
+    ::selection {
+        @apply bg-blue-500/20 text-slate-950;
+    }
+}
+
+@layer utilities {
+
+    /* Glassmorphism card - adaptive */
+    .glass {
+        background: var(--nav-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--card-border);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+    }
+    
+    .glass-light {
+        background: var(--muted-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--card-border);
+    }
+
+    /* Text gradient - Seaside & Lavender */
+    .text-gradient {
+        background: linear-gradient(135deg, var(--accent-blue), var(--accent-sky));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Card */
+    .card {
+        @apply bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl transition-all duration-300 shadow-sm hover:shadow-md hover:border-blue-400/50;
+    }
+    
+    /* Input base */
+    .input-field {
+        @apply w-full bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl text-[var(--foreground)] placeholder-slate-600 px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 transition-all duration-300;
+    }
+
+    /* Button variants */
+    .btn-primary {
+        @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-700 to-sky-700 hover:from-blue-600 hover:to-sky-600 text-white font-bold text-sm transition-all duration-300 active:scale-[0.98] shadow-md shadow-blue-900/10 hover:shadow-sky-900/20;
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white hover:bg-slate-50 text-[var(--foreground)] font-semibold text-sm border border-[var(--card-border)] transition-all duration-300 active:scale-[0.98] hover:border-blue-400 shadow-sm;
+    }
+
+    .divider {
+        @apply border-t border-[var(--card-border)];
+    }
+
+    .badge {
+        @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider shadow-sm;
+    }
+
+    @keyframes fadeSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(12px) scale(0.98);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .animate-fade-in {
+        animation: fadeSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+}
