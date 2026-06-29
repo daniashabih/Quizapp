@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 Int       @id @default(autoincrement())
+  name               String    @db.VarChar(255)
+  email              String    @unique @db.VarChar(255)
+  password           String    @db.VarChar(255)
+  role               Role      @default(candidate)
+  resetToken         String?   @map("reset_token") @db.VarChar(255)
+  resetTokenExpiry   DateTime? @map("reset_token_expiry") @db.Timestamp(0)
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  results            QuizResult[]
+
+  @@map("users")
+}
+
+model Question {
+  id            Int            @id @default(autoincrement())
+  category      String         @db.VarChar(50)
+  questionText  String         @map("question_text") @db.Text
+  options       Json
+  correctAnswer String         @map("correct_answer") @db.VarChar(255)
+  difficulty    Difficulty     @default(beginner)
+  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamp(0)
+
+  @@map("questions")
+}
+
+model QuizResult {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("user_id")
+  category    String   @db.VarChar(50)
+  score       Int
+  total       Int
+  percentage  Decimal  @db.Decimal(5, 2)
+  difficulty  String?  @db.VarChar(20)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("quiz_results")
+}
+
+enum Role {
+  admin
+  candidate
+}
+
+enum Difficulty {
+  beginner
+  intermediate
+  expert
+}
