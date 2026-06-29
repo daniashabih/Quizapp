@@ -1,28 +1,40 @@
-const db = require('../_config/db');
+const prisma = require('../_config/prisma');
 
 const Result = {
     create: async (userId, category, score, total, percentage, difficulty) => {
-        const [result] = await db.execute(
-            'INSERT INTO quiz_results (user_id, category, score, total, percentage, difficulty) VALUES (?, ?, ?, ?, ?, ?)',
-            [userId, category, score, total, percentage, difficulty]
-        );
-        return result.insertId;
+        const result = await prisma.quizResult.create({
+            data: {
+                userId: parseInt(userId, 10),
+                category,
+                score: parseInt(score, 10),
+                total: parseInt(total, 10),
+                percentage: parseFloat(percentage),
+                difficulty
+            }
+        });
+        return result.id;
     },
 
     findByUserId: async (userId) => {
-        const [rows] = await db.execute(
-            'SELECT * FROM quiz_results WHERE user_id = ? ORDER BY created_at DESC',
-            [userId]
-        );
-        return rows;
+        return await prisma.quizResult.findMany({
+            where: { userId: parseInt(userId, 10) },
+            orderBy: { createdAt: 'desc' }
+        });
     },
 
     getStatisticsByUserId: async (userId) => {
-        const [rows] = await db.execute(
-            'SELECT category, MAX(percentage) as best_score, COUNT(*) as attempts FROM quiz_results WHERE user_id = ? GROUP BY category',
-            [userId]
-        );
-        return rows;
+        const results = await prisma.quizResult.groupBy({
+            by: ['category'],
+            where: { userId: parseInt(userId, 10) },
+            _max: { percentage: true },
+            _count: { _all: true }
+        });
+        
+        return results.map(r => ({
+            category: r.category,
+            best_score: r._max.percentage,
+            attempts: r._count._all
+        }));
     }
 };
 

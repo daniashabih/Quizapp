@@ -8,7 +8,7 @@ const questionRoutes = require('./_routes/questionRoutes');
 const categoryRoutes = require('./_routes/categoryRoutes');
 const resultRoutes = require('./_routes/resultRoutes');
 const activityRoutes = require('./_routes/activityRoutes');
-require('./_config/db'); // Initialize DB
+// Database is managed by Prisma now
 
 dotenv.config();
 

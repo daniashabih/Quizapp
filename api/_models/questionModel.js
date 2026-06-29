@@ -1,65 +1,87 @@
-const db = require('../_config/db');
+const prisma = require('../_config/prisma');
 
 const Question = {
     create: async (data) => {
         const { category, question_text, options, correct_answer, difficulty = 'beginner' } = data;
-        const [result] = await db.execute(
-            'INSERT INTO questions (category, question_text, options, correct_answer, difficulty) VALUES (?, ?, ?, ?, ?)',
-            [category, question_text, JSON.stringify(options), correct_answer, difficulty]
-        );
-        return result.insertId;
+        const result = await prisma.question.create({
+            data: {
+                category,
+                questionText: question_text,
+                options: Array.isArray(options) ? options : JSON.parse(options),
+                correctAnswer: correct_answer,
+                difficulty: difficulty.toLowerCase()
+            }
+        });
+        return result.id;
     },
 
     getAll: async () => {
-        const [rows] = await db.execute('SELECT * FROM questions ORDER BY created_at DESC');
-        return rows;
+        const rows = await prisma.question.findMany({
+            orderBy: { createdAt: 'desc' }
+        });
+        return rows.map(r => ({
+            ...r,
+            question_text: r.questionText,
+            correct_answer: r.correctAnswer,
+            created_at: r.createdAt
+        }));
     },
 
     getFiltered: async ({ category, difficulty } = {}) => {
-        const whereClauses = [];
-        const params = [];
-
+        const where = {};
         if (category) {
-            whereClauses.push('LOWER(TRIM(category)) = LOWER(TRIM(?))');
-            params.push(category);
+            where.category = { equals: category, mode: 'insensitive' };
         }
-
         if (difficulty) {
-            whereClauses.push('LOWER(TRIM(difficulty)) = LOWER(TRIM(?))');
-            params.push(difficulty);
+            where.difficulty = difficulty.toLowerCase();
         }
 
-        const whereSql = whereClauses.length > 0
-            ? `WHERE ${whereClauses.join(' AND ')}`
-            : '';
-
-        const [rows] = await db.execute(
-            `SELECT * FROM questions ${whereSql} ORDER BY created_at DESC`,
-            params
-        );
-        return rows;
+        const rows = await prisma.question.findMany({
+            where,
+            orderBy: { createdAt: 'desc' }
+        });
+        
+        return rows.map(r => ({
+            ...r,
+            question_text: r.questionText,
+            correct_answer: r.correctAnswer,
+            created_at: r.createdAt
+        }));
     },
 
     delete: async (id) => {
-        const [result] = await db.execute('DELETE FROM questions WHERE id = ?', [id]);
-        return result.affectedRows;
+        await prisma.question.delete({
+            where: { id: parseInt(id, 10) }
+        });
+        return 1;
     },
 
     update: async (id, data) => {
         const { category, question_text, options, correct_answer, difficulty } = data;
-        const [result] = await db.execute(
-            'UPDATE questions SET category=?, question_text=?, options=?, correct_answer=?, difficulty=? WHERE id=?',
-            [category, question_text, Array.isArray(options) ? JSON.stringify(options) : options, correct_answer, difficulty, id]
-        );
-        return result.affectedRows;
+        await prisma.question.update({
+            where: { id: parseInt(id, 10) },
+            data: {
+                category,
+                questionText: question_text,
+                options: Array.isArray(options) ? options : JSON.parse(options),
+                correctAnswer: correct_answer,
+                difficulty: difficulty.toLowerCase()
+            }
+        });
+        return 1;
     },
 
     getRecentCount: async (days = 3) => {
-        const [rows] = await db.execute(
-            'SELECT COUNT(*) as count FROM questions WHERE created_at >= NOW() - INTERVAL ? DAY',
-            [days]
-        );
-        return rows[0].count;
+        const date = new Date();
+        date.setDate(date.getDate() - days);
+        const count = await prisma.question.count({
+            where: {
+                createdAt: {
+                    gte: date
+                }
+            }
+        });
+        return count;
     }
 };
 

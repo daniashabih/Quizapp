@@ -1,60 +1,101 @@
-const db = require('../_config/db');
+const prisma = require('../_config/prisma');
 
 const User = {
     create: async (name, email, password) => {
-        const role = 'candidate';
-        const [result] = await db.execute(
-            'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
-            [name, email, password, role]
-        );
-        return result.insertId;
+        const result = await prisma.user.create({
+            data: {
+                name,
+                email,
+                password,
+                role: 'candidate'
+            }
+        });
+        return result.id;
     },
 
     findByEmail: async (email) => {
-        const [rows] = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
-        return rows[0];
+        const user = await prisma.user.findUnique({
+            where: { email }
+        });
+        if (!user) return null;
+        return {
+            ...user,
+            created_at: user.createdAt,
+            reset_token: user.resetToken,
+            reset_token_expiry: user.resetTokenExpiry
+        };
     },
 
     findById: async (id) => {
-        const [rows] = await db.execute('SELECT id, name, email, role, created_at FROM users WHERE id = ?', [id]);
-        return rows[0];
+        const user = await prisma.user.findUnique({
+            where: { id: parseInt(id, 10) },
+            select: { id: true, name: true, email: true, role: true, createdAt: true }
+        });
+        if (!user) return null;
+        return {
+            ...user,
+            created_at: user.createdAt
+        };
     },
 
     getAll: async () => {
-        const [rows] = await db.execute('SELECT id, name, email, role, created_at FROM users ORDER BY created_at DESC');
-        return rows;
+        const users = await prisma.user.findMany({
+            select: { id: true, name: true, email: true, role: true, createdAt: true },
+            orderBy: { createdAt: 'desc' }
+        });
+        return users.map(u => ({
+            ...u,
+            created_at: u.createdAt
+        }));
     },
 
     update: async (id, name, email) => {
-        const [result] = await db.execute(
-            'UPDATE users SET name = ?, email = ? WHERE id = ?',
-            [name, email, id]
-        );
-        return result.affectedRows;
+        await prisma.user.update({
+            where: { id: parseInt(id, 10) },
+            data: { name, email }
+        });
+        return 1;
     },
 
     setResetToken: async (email, token, expiry) => {
-        const [result] = await db.execute(
-            'UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE email = ?',
-            [token, expiry, email]
-        );
-        return result.affectedRows;
+        await prisma.user.update({
+            where: { email },
+            data: {
+                resetToken: token,
+                resetTokenExpiry: new Date(expiry)
+            }
+        });
+        return 1;
     },
 
     findByResetToken: async (token) => {
-        const [rows] = await db.execute(
-            'SELECT * FROM users WHERE reset_token = ? AND reset_token_expiry > NOW()',
-            [token]
-        );
-        return rows[0];
+        const user = await prisma.user.findFirst({
+            where: {
+                resetToken: token,
+                resetTokenExpiry: {
+                    gt: new Date()
+                }
+            }
+        });
+        if (!user) return null;
+        return {
+            ...user,
+            created_at: user.createdAt,
+            reset_token: user.resetToken,
+            reset_token_expiry: user.resetTokenExpiry
+        };
     },
 
     updatePassword: async (userId, hashedPassword) => {
-        const [result] = await db.execute(
-            'UPDATE users SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE id = ?',
-            [hashedPassword, userId]
-        );
-        return result.affectedRows;
+        await prisma.user.update({
+            where: { id: parseInt(userId, 10) },
+            data: {
+                password: hashedPassword,
+                resetToken: null,
+                resetTokenExpiry: null
+            }
+        });
+        return 1;
     }
 };
 
