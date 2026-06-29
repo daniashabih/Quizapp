@@ -10,7 +10,7 @@ export default function MainLayout() {
 
         const sendHeartbeat = async () => {
             try {
-                await axios.post('/api/activity/heartbeat', { visitorId });
+                await axios.post('/activity/heartbeat', { visitorId });
             } catch {
                 // Presence updates are best-effort and should stay invisible to users.
             }

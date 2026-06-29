@@ -14,7 +14,7 @@ export default function SelectLanguage() {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const res = await axios.get('/api/categories');
+                const res = await axios.get('/categories');
                 setCategories(res.data);
             } catch {
                 toast.error("Failed to load categories");
@@ -31,7 +31,7 @@ export default function SelectLanguage() {
 
         const fetchActiveNow = async () => {
             try {
-                const res = await axios.get('/api/activity/active-now');
+                const res = await axios.get('/activity/active-now');
                 if (isActive) {
                     setActiveNow(res.data.activeNow);
                 }
@@ -44,7 +44,7 @@ export default function SelectLanguage() {
 
         const registerVisitor = async () => {
             try {
-                const res = await axios.post('/api/activity/heartbeat', { visitorId });
+                const res = await axios.post('/activity/heartbeat', { visitorId });
                 if (isActive) {
                     setActiveNow(res.data.activeNow);
                 }
