@@ -1,4 +1,4 @@
-const db = require('../config/db');
+const db = require('../_config/db');
 
 const Category = {
     create: async (name) => {

@@ -1,4 +1,4 @@
-const Result = require('../models/resultModel');
+const Result = require('../_models/resultModel');
 
 const resultController = {
     saveResult: async (req, res) => {

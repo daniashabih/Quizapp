@@ -1,5 +1,5 @@
 const OpenAI = require('openai');
-const Question = require('../models/questionModel');
+const Question = require('../_models/questionModel');
 require('dotenv').config();
 
 const openai = new OpenAI({

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, getMe, getAllUsers, updateProfile, forgotPassword, resetPassword } = require('../controllers/authController');
-const authMiddleware = require('../middlewares/authMiddleware');
+const { register, login, getMe, getAllUsers, updateProfile, forgotPassword, resetPassword } = require('../_controllers/authController');
+const authMiddleware = require('../_middlewares/authMiddleware');
 
 // Relaxed admin middleware for now, consistent with other routes
 const adminMiddleware = (req, res, next) => {

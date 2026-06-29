@@ -1,4 +1,4 @@
-const { ACTIVE_WINDOW_MS, getActiveNow, registerHeartbeat } = require('../utils/activityTracker');
+const { ACTIVE_WINDOW_MS, getActiveNow, registerHeartbeat } = require('../_utils/activityTracker');
 
 const activityController = {
     heartbeat: (req, res) => {

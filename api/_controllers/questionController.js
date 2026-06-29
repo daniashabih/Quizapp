@@ -1,4 +1,4 @@
-const Question = require('../models/questionModel');
+const Question = require('../_models/questionModel');
 
 const fs = require('fs');
 const csv = require('csv-parser');

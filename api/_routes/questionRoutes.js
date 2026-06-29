@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { createQuestion, importQuestions, exportQuestions, getQuestions, checkNewQuestions, deleteQuestion, updateQuestion } = require('../controllers/questionController');
-const { generateQuestions } = require('../controllers/aiController');
-const authMiddleware = require('../middlewares/authMiddleware');
+const { createQuestion, importQuestions, exportQuestions, getQuestions, checkNewQuestions, deleteQuestion, updateQuestion } = require('../_controllers/questionController');
+const { generateQuestions } = require('../_controllers/aiController');
+const authMiddleware = require('../_middlewares/authMiddleware');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 

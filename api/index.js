@@ -3,12 +3,12 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
-const authRoutes = require('./routes/authRoutes');
-const questionRoutes = require('./routes/questionRoutes');
-const categoryRoutes = require('./routes/categoryRoutes');
-const resultRoutes = require('./routes/resultRoutes');
-const activityRoutes = require('./routes/activityRoutes');
-require('./config/db'); // Initialize DB
+const authRoutes = require('./_routes/authRoutes');
+const questionRoutes = require('./_routes/questionRoutes');
+const categoryRoutes = require('./_routes/categoryRoutes');
+const resultRoutes = require('./_routes/resultRoutes');
+const activityRoutes = require('./_routes/activityRoutes');
+require('./_config/db'); // Initialize DB
 
 dotenv.config();
 

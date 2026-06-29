@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { createCategory, getCategories, updateCategory, deleteCategory } = require('../controllers/categoryController');
-const authMiddleware = require('../middlewares/authMiddleware');
+const { createCategory, getCategories, updateCategory, deleteCategory } = require('../_controllers/categoryController');
+const authMiddleware = require('../_middlewares/authMiddleware');
 
 const adminMiddleware = (req, res, next) => {
     // For now, disabling check for development, but ideally:
