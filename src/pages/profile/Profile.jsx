@@ -59,7 +59,7 @@ export default function Profile() {
                     {/* Profile Card */}
                     <div className="card p-6 rounded-2xl text-center">
                         <div className="relative inline-block mb-4">
-                            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center text-white font-display font-extrabold text-4xl shadow-xl">
+                            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#163B34] to-[#289B7D] flex items-center justify-center text-white font-display font-extrabold text-4xl shadow-xl">
                                 {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                             </div>
                             <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 border-2 border-[var(--card-bg)]" />
@@ -69,7 +69,7 @@ export default function Profile() {
                                 <h2 className="text-xl font-bold text-[var(--foreground)]">{user?.name}</h2>
                                 <p className="text-sm text-[var(--foreground-muted)]">{user?.email}</p>
                                 <div className="flex items-center justify-center gap-2 mt-3">
-                                    <span className="badge-indigo text-[10px]">{user?.role}</span>
+                                    <span className="badge-emerald text-[10px]">{user?.role}</span>
                                 </div>
                                 <button onClick={() => setIsEditing(true)}
                                     className="btn-secondary w-full justify-center text-sm mt-5">
@@ -180,7 +180,7 @@ function InfoRow({ icon: Icon, label, value, isLink }) {
             <div>
                 <p className="text-[10px] font-semibold text-[var(--foreground-muted)] uppercase tracking-wider">{label}</p>
                 {isLink ? (
-                    <a href={value} className="text-sm font-medium text-indigo-500 hover:text-indigo-400">{value}</a>
+                    <a href={value} className="text-sm font-medium text-[#163B34] hover:text-[#289B7D]">{value}</a>
                 ) : (
                     <p className="text-sm font-medium text-[var(--foreground)]">{value}</p>
                 )}
@@ -192,7 +192,7 @@ function InfoRow({ icon: Icon, label, value, isLink }) {
 function SocialLink({ icon: Icon, label, href }) {
     return (
         <a href={href} target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--muted-bg)] border border-[var(--card-border)] hover:border-indigo-300 dark:hover:border-indigo-500/30 hover:text-indigo-500 transition-all text-sm font-medium text-[var(--foreground)] group">
+            className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--muted-bg)] border border-[var(--card-border)] hover:border-[#163B34] hover:text-[#163B34] transition-all text-sm font-medium text-[var(--foreground)] group">
             <Icon size={16} className="group-hover:scale-110 transition-transform" />
             {label}
             <ChevronRight size={14} className="ml-auto text-[var(--foreground-muted)]" />

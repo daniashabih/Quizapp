@@ -164,7 +164,7 @@ export default function Settings() {
                                     </span>
                                     <button
                                         onClick={() => setNotifications(prev => ({ ...prev, [key]: !value }))}
-                                        className={`relative w-11 h-6 rounded-full transition-all duration-200 ${value ? 'bg-indigo-500' : 'bg-[var(--card-border)]'}`}
+                                        className={`relative w-11 h-6 rounded-full transition-all duration-200 ${value ? 'bg-[#163B34]' : 'bg-[var(--card-border)]'}`}
                                     >
                                         <div className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${value ? 'translate-x-5' : ''}`} />
                                     </button>
@@ -192,11 +192,11 @@ export default function Settings() {
                                     onClick={() => setThemeMode(opt.id)}
                                     className={`p-5 rounded-2xl border-2 text-center transition-all ${
                                         theme === opt.id
-                                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-500/10'
-                                            : 'border-[var(--card-border)] hover:border-indigo-300'
+                                            ? 'border-[#163B34] bg-[#EAF5F2]'
+                                            : 'border-[var(--card-border)] hover:border-[#289B7D]'
                                     }`}
                                 >
-                                    <opt.icon size={24} className={`mx-auto mb-2 ${theme === opt.id ? 'text-indigo-500' : 'text-[var(--foreground-muted)]'}`} />
+                                    <opt.icon size={24} className={`mx-auto mb-2 ${theme === opt.id ? 'text-[#163B34]' : 'text-[var(--foreground-muted)]'}`} />
                                     <p className="text-sm font-bold text-[var(--foreground)]">{opt.label}</p>
                                     <p className="text-[10px] text-[var(--foreground-muted)]">{opt.desc}</p>
                                 </button>
@@ -227,7 +227,7 @@ export default function Settings() {
                                 <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-[var(--muted-bg)] border border-[var(--card-border)]">
                                     <span className="text-sm font-medium text-[var(--foreground)]">{item.label}</span>
                                     <button
-                                        className={`relative w-11 h-6 rounded-full transition-all duration-200 ${item.enabled ? 'bg-indigo-500' : 'bg-[var(--card-border)]'}`}
+                                        className={`relative w-11 h-6 rounded-full transition-all duration-200 ${item.enabled ? 'bg-[#163B34]' : 'bg-[var(--card-border)]'}`}
                                     >
                                         <div className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200 ${item.enabled ? 'translate-x-5' : ''}`} />
                                     </button>
@@ -293,7 +293,7 @@ export default function Settings() {
                                 onClick={() => setActiveSection(s.id)}
                                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                                     activeSection === s.id
-                                        ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400'
+                                        ? 'bg-[#EAF5F2] text-[#163B34]'
                                         : 'text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--muted-bg)]'
                                 } ${s.id === 'danger' ? 'hover:text-red-500' : ''}`}
                             >
