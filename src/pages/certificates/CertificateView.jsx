@@ -40,7 +40,6 @@ export default function CertificateView() {
             <Navbar />
             <div className="flex-1 py-24 lg:py-28 px-4">
                 <div className="max-w-3xl mx-auto">
-                    {/* Actions */}
                     <div className="flex items-center gap-3 mb-8">
                         <Link to="/dashboard" className="btn-ghost text-sm">
                             <ArrowLeft size={16} /> Back to Dashboard
@@ -54,30 +53,26 @@ export default function CertificateView() {
                         </button>
                     </div>
 
-                    {/* Certificate */}
                     <div ref={certRef} className="card overflow-hidden rounded-3xl shadow-2xl animate-scale-in">
-                        {/* Premium Border */}
-                        <div className="h-2 bg-gradient-to-r from-indigo-500 via-cyan-500 to-amber-500" />
+                        <div className="h-2 bg-gradient-to-r from-[#163B34] via-[#289B7D] to-[#53AF97]" />
 
                         <div className="p-10 lg:p-16">
-                            {/* Header */}
                             <div className="text-center mb-10">
                                 <div className="flex items-center justify-center mb-6">
                                     <BrandLogo size="lg" />
                                 </div>
-                                <div className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-cyan-500 mx-auto mb-6 rounded-full" />
+                                <div className="w-24 h-1 bg-gradient-to-r from-[#163B34] to-[#289B7D] mx-auto mb-6 rounded-full" />
                                 <p className="text-sm font-semibold text-[var(--foreground-muted)] uppercase tracking-[0.2em] mb-2">
                                     Certificate of Achievement
                                 </p>
                                 <h1 className="text-4xl lg:text-5xl font-display font-extrabold text-[var(--foreground)]">
                                     {category}
                                 </h1>
-                                <div className="badge-indigo mt-4 mx-auto">
+                                <div className="badge-emerald mt-4 mx-auto">
                                     {difficultyLabel[difficulty] || difficulty} Level
                                 </div>
                             </div>
 
-                            {/* Body */}
                             <div className="text-center max-w-lg mx-auto mb-10">
                                 <p className="text-sm text-[var(--foreground-muted)] mb-2">This is to certify that</p>
                                 <h2 className="text-3xl font-display font-bold text-[var(--foreground)] border-b-2 border-dashed border-[var(--card-border)] pb-2 inline-block mb-4">
@@ -85,12 +80,11 @@ export default function CertificateView() {
                                 </h2>
                                 <p className="text-sm text-[var(--foreground-muted)] leading-relaxed">
                                     Has successfully completed the {category} assessment with an outstanding score of{' '}
-                                    <strong className="text-indigo-500">{percentage}%</strong>, demonstrating exceptional proficiency
+                                    <strong className="text-[#163B34]">{percentage}%</strong>, demonstrating exceptional proficiency
                                     and deep understanding of the subject matter.
                                 </p>
                             </div>
 
-                            {/* Score */}
                             <div className="flex items-center justify-center gap-10 mb-10 py-6 border-y border-[var(--card-border)]">
                                 <div className="text-center">
                                     <p className="text-3xl font-display font-extrabold text-emerald-500">{percentage}%</p>
@@ -98,17 +92,16 @@ export default function CertificateView() {
                                 </div>
                                 <div className="w-px h-12 bg-[var(--card-border)]" />
                                 <div className="text-center">
-                                    <p className="text-3xl font-display font-extrabold text-indigo-500">{difficultyLabel[difficulty] || difficulty}</p>
+                                    <p className="text-3xl font-display font-extrabold text-[#163B34]">{difficultyLabel[difficulty] || difficulty}</p>
                                     <p className="text-[10px] text-[var(--foreground-muted)] font-semibold uppercase tracking-wider">Level</p>
                                 </div>
                                 <div className="w-px h-12 bg-[var(--card-border)]" />
                                 <div className="text-center">
-                                    <p className="text-3xl font-display font-extrabold text-cyan-500">{issueDate}</p>
+                                    <p className="text-3xl font-display font-extrabold text-[#289B7D]">{issueDate}</p>
                                     <p className="text-[10px] text-[var(--foreground-muted)] font-semibold uppercase tracking-wider">Date</p>
                                 </div>
                             </div>
 
-                            {/* Footer */}
                             <div className="flex items-end justify-between">
                                 <div>
                                     <p className="text-xs font-bold text-[var(--foreground-muted)] uppercase tracking-wider mb-1">Certificate ID</p>

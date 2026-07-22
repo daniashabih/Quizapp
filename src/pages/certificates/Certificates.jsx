@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Award, Download, ExternalLink, Linkedin, ChevronRight, Search, Loader2, FileText, Lock, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
-const certificates = [];
 const mockCertificates = [
     { id: 'CERT-001', tech: 'JavaScript', level: 'Advanced', score: 92, date: '2026-06-15', issued: true },
     { id: 'CERT-002', tech: 'React', level: 'Intermediate', score: 88, date: '2026-06-10', issued: true },
@@ -26,7 +25,6 @@ export default function Certificates() {
 
     return (
         <div className="max-w-6xl mx-auto space-y-6 animate-fade-up">
-            {/* Header */}
             <div>
                 <h1 className="text-2xl lg:text-3xl font-display font-bold text-[var(--foreground)]">My Certificates</h1>
                 <p className="text-sm text-[var(--foreground-muted)] mt-1">
@@ -34,32 +32,30 @@ export default function Certificates() {
                 </p>
             </div>
 
-            {/* Stats */}
             <div className="grid grid-cols-3 gap-4">
                 <div className="card p-5 rounded-2xl text-center">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-center justify-center mx-auto mb-2">
-                        <Award size={18} className="text-indigo-500" />
+                    <div className="w-10 h-10 rounded-xl bg-[#EAF5F2] border border-[#D4EBE5] flex items-center justify-center mx-auto mb-2">
+                        <Award size={18} className="text-[#163B34]" />
                     </div>
                     <p className="text-2xl font-display font-bold text-[var(--foreground)]">{earnedCount}</p>
                     <p className="text-[10px] font-semibold text-[var(--foreground-muted)] uppercase tracking-wider">Earned</p>
                 </div>
                 <div className="card p-5 rounded-2xl text-center">
-                    <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 flex items-center justify-center mx-auto mb-2">
+                    <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto mb-2">
                         <Lock size={18} className="text-amber-500" />
                     </div>
                     <p className="text-2xl font-display font-bold text-[var(--foreground)]">{certList.filter(c => !c.issued).length}</p>
                     <p className="text-[10px] font-semibold text-[var(--foreground-muted)] uppercase tracking-wider">Available</p>
                 </div>
                 <div className="card p-5 rounded-2xl text-center">
-                    <div className="w-10 h-10 rounded-xl bg-cyan-50 dark:bg-cyan-500/10 border border-cyan-200 dark:border-cyan-500/20 flex items-center justify-center mx-auto mb-2">
-                        <FileText size={18} className="text-cyan-500" />
+                    <div className="w-10 h-10 rounded-xl bg-[#F7FAF9] border border-[#E5E7EB] flex items-center justify-center mx-auto mb-2">
+                        <FileText size={18} className="text-[#289B7D]" />
                     </div>
                     <p className="text-2xl font-display font-bold text-[var(--foreground)]">{certList.length}</p>
                     <p className="text-[10px] font-semibold text-[var(--foreground-muted)] uppercase tracking-wider">Total</p>
                 </div>
             </div>
 
-            {/* Search */}
             <div className="relative max-w-sm">
                 <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--foreground-muted)]" />
                 <input
@@ -71,14 +67,13 @@ export default function Certificates() {
                 />
             </div>
 
-            {/* Certificates Grid */}
             <div className="grid gap-4">
                 {filtered.map((cert, i) => (
                     <div key={i} className={`card p-5 lg:p-6 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:shadow-md transition-all group ${cert.issued ? '' : 'opacity-60'}`}>
                         <div className="flex items-center gap-4">
                             <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-lg ${
                                 cert.issued
-                                    ? 'bg-gradient-to-br from-indigo-500 to-cyan-500'
+                                    ? 'bg-gradient-to-br from-[#163B34] to-[#289B7D]'
                                     : 'bg-[var(--muted-bg)] border border-[var(--card-border)]'
                             }`}>
                                 {cert.issued ? '🏆' : '🔒'}
@@ -110,7 +105,7 @@ export default function Certificates() {
                                     >
                                         <ExternalLink size={13} /> View
                                     </Link>
-                                    <button className="p-2.5 rounded-xl text-[var(--foreground-muted)] hover:text-indigo-500 hover:bg-[var(--muted-bg)] transition-all">
+                                    <button className="p-2.5 rounded-xl text-[var(--foreground-muted)] hover:text-[#163B34] hover:bg-[var(--muted-bg)] transition-all">
                                         <Download size={15} />
                                     </button>
                                     <button className="p-2.5 rounded-xl text-[var(--foreground-muted)] hover:text-[#0A66C2] hover:bg-[var(--muted-bg)] transition-all">

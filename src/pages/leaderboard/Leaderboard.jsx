@@ -32,25 +32,22 @@ export default function Leaderboard() {
             <Navbar />
             <div className="flex-1 pt-24 lg:pt-28 pb-16">
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 animate-fade-up">
-                    {/* Header */}
                     <div className="text-center mb-12">
-                        <div className="badge-amber mx-auto mb-4">
+                        <div className="badge-emerald mx-auto mb-4">
                             <Trophy size={12} />
                             Leaderboard
                         </div>
                         <h1 className="text-4xl lg:text-5xl font-display font-extrabold text-[var(--foreground)] mb-3">
-                            Global <span className="text-gradient-amber">Rankings</span>
+                            Global <span className="text-gradient">Rankings</span>
                         </h1>
                         <p className="text-[var(--foreground-muted)] max-w-lg mx-auto">
                             Compete with developers worldwide. Top performers earn exclusive badges and recognition.
                         </p>
                     </div>
 
-                    {/* Podium */}
                     <div className="flex items-end justify-center gap-4 mb-12">
-                        {/* Silver - 2nd */}
                         <div className="flex flex-col items-center">
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center text-white font-bold text-lg mb-2 shadow-lg border-2 border-white dark:border-slate-700">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center text-white font-bold text-lg mb-2 shadow-lg border-2 border-white">
                                 2
                             </div>
                             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center text-white font-bold text-2xl mb-2 shadow-xl">
@@ -58,29 +55,27 @@ export default function Leaderboard() {
                             </div>
                             <p className="text-sm font-bold text-[var(--foreground)]">{users[1].name}</p>
                             <p className="text-xs text-[var(--foreground-muted)]">{users[1].xp.toLocaleString()} XP</p>
-                            <div className="w-20 h-24 bg-gradient-to-t from-slate-300/20 to-slate-300/5 rounded-t-2xl mt-2 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm font-bold text-slate-500 dark:text-slate-400">
+                            <div className="w-20 h-24 bg-gradient-to-t from-slate-300/20 to-slate-300/5 rounded-t-2xl mt-2 border border-slate-200 flex items-center justify-center text-sm font-bold text-slate-400">
                                 <Medal size={20} className="text-slate-400" />
                             </div>
                         </div>
 
-                        {/* Gold - 1st */}
                         <div className="flex flex-col items-center -mt-4">
                             <div className="w-10 h-7 rounded-t-lg bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-white font-bold text-sm shadow-lg -mb-2 z-10">
                                 <Trophy size={14} />
                             </div>
-                            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-white font-bold text-3xl mb-2 shadow-2xl ring-4 ring-amber-200 dark:ring-amber-500/30">
+                            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center text-white font-bold text-3xl mb-2 shadow-2xl ring-4 ring-amber-200">
                                 {users[0].initials}
                             </div>
                             <p className="text-lg font-bold text-[var(--foreground)]">{users[0].name}</p>
                             <p className="text-sm text-[var(--foreground-muted)]">{users[0].xp.toLocaleString()} XP</p>
-                            <div className="w-28 h-32 bg-gradient-to-t from-amber-400/20 to-amber-400/5 rounded-t-2xl mt-2 border border-amber-200 dark:border-amber-500/20 flex items-center justify-center">
+                            <div className="w-28 h-32 bg-gradient-to-t from-amber-400/20 to-amber-400/5 rounded-t-2xl mt-2 border border-amber-200 flex items-center justify-center">
                                 <Trophy size={28} className="text-amber-500" />
                             </div>
                         </div>
 
-                        {/* Bronze - 3rd */}
                         <div className="flex flex-col items-center">
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-600 to-yellow-700 flex items-center justify-center text-white font-bold text-lg mb-2 shadow-lg border-2 border-white dark:border-slate-700">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-600 to-yellow-700 flex items-center justify-center text-white font-bold text-lg mb-2 shadow-lg border-2 border-white">
                                 3
                             </div>
                             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-600 to-yellow-700 flex items-center justify-center text-white font-bold text-2xl mb-2 shadow-xl">
@@ -88,13 +83,12 @@ export default function Leaderboard() {
                             </div>
                             <p className="text-sm font-bold text-[var(--foreground)]">{users[2].name}</p>
                             <p className="text-xs text-[var(--foreground-muted)]">{users[2].xp.toLocaleString()} XP</p>
-                            <div className="w-20 h-20 bg-gradient-to-t from-amber-600/20 to-amber-600/5 rounded-t-2xl mt-2 border border-amber-200 dark:border-amber-500/20 flex items-center justify-center text-sm font-bold text-amber-600 dark:text-amber-500">
+                            <div className="w-20 h-20 bg-gradient-to-t from-amber-600/20 to-amber-600/5 rounded-t-2xl mt-2 border border-amber-200 flex items-center justify-center text-sm font-bold text-amber-600">
                                 <Medal size={20} />
                             </div>
                         </div>
                     </div>
 
-                    {/* Search */}
                     <div className="relative max-w-sm mb-6">
                         <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--foreground-muted)]" />
                         <input
@@ -106,7 +100,6 @@ export default function Leaderboard() {
                         />
                     </div>
 
-                    {/* Leaderboard Table */}
                     <div className="card overflow-hidden rounded-2xl">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
@@ -133,7 +126,7 @@ export default function Leaderboard() {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm shadow-md">
+                                                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#163B34] to-[#289B7D] flex items-center justify-center text-white font-bold text-sm shadow-md">
                                                         {user.initials}
                                                     </div>
                                                     <span className="text-sm font-semibold text-[var(--foreground)]">{user.name}</span>
@@ -145,7 +138,7 @@ export default function Leaderboard() {
                                             <td className="px-6 py-4 text-sm text-[var(--foreground-muted)] font-medium">{user.quizzes}</td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-1.5">
-                                                    <Award size={14} className="text-indigo-500" />
+                                                    <Award size={14} className="text-[#163B34]" />
                                                     <span className="text-sm font-medium text-[var(--foreground)]">{user.certs}</span>
                                                 </div>
                                             </td>
@@ -157,7 +150,7 @@ export default function Leaderboard() {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className={`text-sm font-bold ${
-                                                    user.score >= 90 ? 'text-emerald-500' : user.score >= 80 ? 'text-indigo-500' : 'text-[var(--foreground-muted)]'
+                                                    user.score >= 90 ? 'text-emerald-500' : user.score >= 80 ? 'text-[#163B34]' : 'text-[var(--foreground-muted)]'
                                                 }`}>
                                                     {user.score}%
                                                 </span>
