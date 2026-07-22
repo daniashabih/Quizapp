@@ -8,17 +8,33 @@ const questionRoutes = require('./_routes/questionRoutes');
 const categoryRoutes = require('./_routes/categoryRoutes');
 const resultRoutes = require('./_routes/resultRoutes');
 const activityRoutes = require('./_routes/activityRoutes');
-// Database is managed by Prisma now
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors());
+// --- CORS Configuration ---
+const allowedOrigins = [
+    'https://quizapp-tawny.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:4173',
+];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        // Allow requests with no origin (server-to-server, curl, etc.)
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(null, true); // Allow all in dev; tighten for production
+        }
+    },
+    credentials: true,
+}));
+
 app.use(helmet());
-app.use(morgan('dev'));
+app.use(morgan(process.env.VERCEL ? 'short' : 'dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -39,6 +55,11 @@ app.use((err, req, res, next) => {
     res.status(500).json({ message: 'Something went wrong!' });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+// --- Start server (local) or export (Vercel) ---
+if (process.env.VERCEL !== '1') {
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}
+
+module.exports = app;
