@@ -1,20 +1,25 @@
-import React, { createContext, useContext, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
+    const [theme] = useState('light');
+
     useEffect(() => {
         const root = window.document.documentElement;
         root.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
+        root.style.colorScheme = 'light';
+        localStorage.setItem('hangbug-theme', 'light');
     }, []);
 
-    const toggleTheme = () => {
-        // Feature removed as per request
-    };
-
     return (
-        <ThemeContext.Provider value={{ theme: 'light', toggleTheme }}>
+        <ThemeContext.Provider value={{
+            theme: 'light',
+            resolvedTheme: 'light',
+            toggleTheme: () => {},
+            setThemeMode: () => {},
+            isDark: false
+        }}>
             {children}
         </ThemeContext.Provider>
     );
@@ -22,8 +27,6 @@ export const ThemeProvider = ({ children }) => {
 
 export const useTheme = () => {
     const context = useContext(ThemeContext);
-    if (!context) {
-        throw new Error('useTheme must be used within a ThemeProvider');
-    }
+    if (!context) throw new Error('useTheme must be used within a ThemeProvider');
     return context;
 };

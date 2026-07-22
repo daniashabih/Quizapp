@@ -1,64 +1,86 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import {
-    Clock, CheckCircle2, Menu, X, Bug, Terminal, ArrowRight, Layers
+    Clock, CheckCircle2, XCircle, Menu, X, Bug, ArrowRight, ArrowLeft,
+    Flag, Layers, AlertCircle, HelpCircle, ChevronLeft, ChevronRight,
+    ListOrdered, Send, Loader2
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+
+const difficultyColors = {
+    beginner: { bg: 'bg-emerald-500', text: 'text-emerald-500', label: 'Beginner' },
+    intermediate: { bg: 'bg-indigo-500', text: 'text-indigo-500', label: 'Intermediate' },
+    expert: { bg: 'bg-amber-500', text: 'text-amber-500', label: 'Expert' },
+};
 
 const Quiz = () => {
     const { user } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
     const selectedCategory = location.state?.category || location.state?.language;
-    const difficulty = location.state?.difficulty;
+    const difficulty = location.state?.difficulty || 'beginner';
 
     const [questions, setQuestions] = useState([]);
-    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(0);
     const [selectedAnswers, setSelectedAnswers] = useState({});
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [flaggedQuestions, setFlaggedQuestions] = useState(new Set());
+    const [sidebarOpen, setSidebarOpen] = useState(true);
     const [loading, setLoading] = useState(true);
     const [timeLeft, setTimeLeft] = useState(60);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [wrongAnswers, setWrongAnswers] = useState({});
-    const [showBugs, setShowBugs] = useState(false);
+    const [showFeedback, setShowFeedback] = useState(false);
+    const [feedbackType, setFeedbackType] = useState(null); // 'correct' | 'wrong'
+    const [showConfirmSubmit, setShowConfirmSubmit] = useState(false);
+    const [startTime, setStartTime] = useState(Date.now());
 
-    const normalizeValue = (value) => String(value || '').trim().replace(/\s+/g, ' ').toLowerCase();
+    const normalizeValue = (val) => String(val || '').trim().replace(/\s+/g, ' ').toLowerCase();
 
     useEffect(() => {
         setTimeLeft(60);
-        setShowBugs(false);
-    }, [currentQuestionIndex]);
+        setShowFeedback(false);
+        setFeedbackType(null);
+    }, [currentIndex]);
 
     useEffect(() => {
         if (!loading && questions.length > 0 && !isSubmitted) {
             const timer = setInterval(() => {
-                setTimeLeft((prev) => prev <= 1 ? 0 : prev - 1);
+                setTimeLeft((prev) => {
+                    if (prev <= 1) {
+                        clearInterval(timer);
+                        handleAutoAdvance();
+                        return 0;
+                    }
+                    return prev - 1;
+                });
             }, 1000);
             return () => clearInterval(timer);
         }
-    }, [loading, questions, isSubmitted, currentQuestionIndex]);
+    }, [loading, questions, isSubmitted, currentIndex]);
 
-    useEffect(() => {
-        if (timeLeft === 0 && !isSubmitted && !loading) {
-            setShowBugs(true);
-            const currentQ = questions[currentQuestionIndex];
-            if (currentQ) setWrongAnswers(prev => ({ ...prev, [currentQ.id]: true }));
+    const handleAutoAdvance = () => {
+        const currentQ = questions[currentIndex];
+        if (currentQ) {
+            setWrongAnswers(prev => ({ ...prev, [currentQ.id]: true }));
+            setFeedbackType('timeout');
+            setShowFeedback(true);
             setTimeout(() => {
-                if (currentQuestionIndex < questions.length - 1) {
-                    setCurrentQuestionIndex(prev => prev + 1);
+                setShowFeedback(false);
+                if (currentIndex < questions.length - 1) {
+                    setCurrentIndex(prev => prev + 1);
                 } else {
                     handleSubmitQuiz();
                 }
-            }, 1500);
+            }, 1000);
         }
-    }, [timeLeft, loading, isSubmitted]);
+    };
 
     useEffect(() => {
         if (!selectedCategory) {
-            toast.error("Invalid session.");
-            navigate('/quiz');
+            toast.error("No category selected.");
+            navigate('/technologies');
             return;
         }
         const fetchQuestions = async () => {
@@ -66,16 +88,16 @@ const Quiz = () => {
                 let url = `/questions?category=${encodeURIComponent(selectedCategory)}`;
                 if (difficulty) url += `&difficulty=${encodeURIComponent(difficulty)}`;
                 const res = await axios.get(url);
-                const filteredQuestions = res.data.filter((question) => {
-                    const categoryMatches = normalizeValue(question.category) === normalizeValue(selectedCategory);
-                    const difficultyMatches = !difficulty || normalizeValue(question.difficulty) === normalizeValue(difficulty);
-                    return categoryMatches && difficultyMatches;
+                const filtered = res.data.filter(q => {
+                    const catMatch = normalizeValue(q.category) === normalizeValue(selectedCategory);
+                    const diffMatch = !difficulty || normalizeValue(q.difficulty) === normalizeValue(difficulty);
+                    return catMatch && diffMatch;
                 });
-
-                setQuestions(filteredQuestions);
-                if (filteredQuestions.length === 0) {
-                    toast.info(`No ${difficulty || ''} questions found for ${selectedCategory}.`.replace(/\s+/g, ' ').trim());
+                setQuestions(filtered);
+                if (filtered.length === 0) {
+                    toast.info(`No questions found for ${selectedCategory} at ${difficulty} level.`);
                 }
+                setStartTime(Date.now());
             } catch {
                 toast.error("Failed to load questions.");
             } finally {
@@ -87,24 +109,32 @@ const Quiz = () => {
 
     const handleAnswerSelect = (questionId, optionIndex) => {
         setSelectedAnswers(prev => ({ ...prev, [questionId]: optionIndex }));
-        const currentQ = questions.find(q => q.id === questionId);
-        if (currentQ) {
-            let opts = currentQ.options;
-            if (typeof opts === 'string') {
-                try { opts = JSON.parse(opts); } catch { opts = []; }
-            }
-            if (opts[optionIndex] !== currentQ.correct_answer) {
-                setShowBugs(true);
-                setWrongAnswers(prev => ({ ...prev, [questionId]: true }));
-                setTimeout(() => setShowBugs(false), 2000);
-            } else {
-                setWrongAnswers(prev => {
-                    const n = { ...prev };
-                    delete n[questionId];
-                    return n;
-                });
-            }
+        const q = questions.find(q => q.id === questionId);
+        if (!q) return;
+        let opts = q.options;
+        if (typeof opts === 'string') { try { opts = JSON.parse(opts); } catch { opts = []; } }
+        const isCorrect = opts[optionIndex] === q.correct_answer;
+        setFeedbackType(isCorrect ? 'correct' : 'wrong');
+        setShowFeedback(true);
+        if (!isCorrect) {
+            setWrongAnswers(prev => ({ ...prev, [questionId]: true }));
+        } else {
+            setWrongAnswers(prev => {
+                const n = { ...prev };
+                delete n[questionId];
+                return n;
+            });
         }
+        setTimeout(() => setShowFeedback(false), 800);
+    };
+
+    const toggleFlag = (questionId) => {
+        setFlaggedQuestions(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(questionId)) newSet.delete(questionId);
+            else newSet.add(questionId);
+            return newSet;
+        });
     };
 
     const handleSubmitQuiz = async () => {
@@ -117,9 +147,9 @@ const Quiz = () => {
                 if (opts[idx] === q.correct_answer) score++;
             }
         });
-        
-        const percentage = questions.length > 0 ? (score / questions.length) * 100 : 0;
-        
+        const percentage = questions.length > 0 ? Math.round((score / questions.length) * 100) : 0;
+        const timeTaken = Math.round((Date.now() - startTime) / 1000);
+
         try {
             await axios.post('/results/save', {
                 category: selectedCategory,
@@ -128,223 +158,247 @@ const Quiz = () => {
                 percentage,
                 difficulty
             });
-            toast.success("Result saved successfully!");
         } catch (error) {
             console.error("Error saving result:", error);
-            const errorMsg = error.response?.data?.message || error.response?.data?.error || "Failed to save result to your profile.";
-            toast.error(errorMsg);
         }
 
         setIsSubmitted(true);
-        navigate('/quiz/result', { state: { score, total: questions.length } });
+        navigate('/quiz/result', { state: { score, total: questions.length, percentage, category: selectedCategory, difficulty, timeTaken } });
     };
 
     if (loading) {
         return (
-            <div className="fixed inset-0 bg-[var(--page-bg)] flex flex-col items-center justify-center gap-4">
-                <div className="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
-                <p className="text-[var(--muted)] text-sm font-medium animate-pulse tracking-widest uppercase">Loading Assessment...</p>
+            <div className="min-h-screen bg-[var(--page-bg)] flex items-center justify-center">
+                <div className="text-center">
+                    <Loader2 size={40} className="animate-spin text-indigo-500 mx-auto mb-4" />
+                    <p className="text-sm font-medium text-[var(--foreground-muted)] animate-pulse">Loading Quiz...</p>
+                </div>
             </div>
         );
     }
 
     if (questions.length === 0) {
         return (
-            <div className="min-h-[70vh] flex items-center justify-center">
-                <div className="max-w-lg w-full card p-8 text-center">
-                    <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-[var(--muted-bg)] border border-[var(--card-border)] flex items-center justify-center text-[var(--muted)]">
-                        <Layers size={24} />
+            <div className="min-h-screen bg-[var(--page-bg)] flex items-center justify-center p-4">
+                <div className="card p-8 rounded-2xl max-w-md w-full text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-[var(--muted-bg)] border border-[var(--card-border)] flex items-center justify-center mx-auto mb-4">
+                        <HelpCircle size={28} className="text-[var(--foreground-muted)]" />
                     </div>
-                    <h2 className="text-2xl font-display font-bold text-[var(--foreground)] mb-3">
-                        No questions available
-                    </h2>
-                    <p className="text-[var(--muted)] text-sm leading-relaxed mb-6">
-                        We could not find any questions for the {selectedCategory} track{difficulty ? ` at ${difficulty} difficulty` : ''}.
+                    <h2 className="text-xl font-display font-bold text-[var(--foreground)] mb-2">No Questions Available</h2>
+                    <p className="text-sm text-[var(--foreground-muted)] mb-6">
+                        No {difficulty} questions for {selectedCategory}. Try a different difficulty or track.
                     </p>
-                    <div className="flex items-center justify-center gap-3">
-                        <button
-                            onClick={() => navigate('/quiz')}
-                            className="btn-secondary text-sm"
-                        >
-                            Change Track
-                        </button>
-                        <button
-                            onClick={() => navigate(-1)}
-                            className="btn-primary text-sm"
-                        >
-                            Choose Another Level
-                        </button>
-                    </div>
+                    <button onClick={() => navigate('/technologies')} className="btn-primary text-sm">
+                        Browse Technologies
+                    </button>
                 </div>
             </div>
         );
     }
 
-    const currentQuestion = questions[currentQuestionIndex];
-    let currentOptions = currentQuestion?.options;
-    if (typeof currentOptions === 'string') {
-        try { currentOptions = JSON.parse(currentOptions); } catch { currentOptions = []; }
-    }
+    const currentQ = questions[currentIndex];
+    let currentOptions = currentQ?.options;
+    if (typeof currentOptions === 'string') { try { currentOptions = JSON.parse(currentOptions); } catch { currentOptions = []; } }
 
     const answeredCount = Object.keys(selectedAnswers).length;
+    const flaggedCount = flaggedQuestions.size;
+    const isLastQuestion = currentIndex === questions.length - 1;
     const timerPct = (timeLeft / 60) * 100;
     const timerIsLow = timeLeft < 10;
+    const diffStyle = difficultyColors[difficulty] || difficultyColors.beginner;
 
     return (
-        <div className="flex flex-col h-screen bg-[var(--page-bg)] text-[var(--foreground)] overflow-hidden transition-colors duration-300">
-            {/* Header Bar */}
-            <header className="h-16 bg-[var(--nav-bg)] backdrop-blur-xl border-b border-[var(--card-border)] flex items-center justify-between px-6 z-50 shrink-0">
-                {/* Left: Context */}
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-blue-500/15 border border-blue-500/25 flex items-center justify-center text-blue-400">
-                        <Terminal size={15} />
+        <div className="min-h-screen bg-[var(--page-bg)] flex flex-col">
+            {/* ─── TOP BAR ─── */}
+            <header className="sticky top-0 z-40 bg-[var(--nav-bg)] backdrop-blur-xl border-b border-[var(--card-border)]">
+                <div className="flex items-center justify-between h-16 px-4 lg:px-6">
+                    {/* Left */}
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => navigate('/technologies')}
+                            className="p-2 rounded-xl text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--muted-bg)] transition-all"
+                        >
+                            <ArrowLeft size={18} />
+                        </button>
+                        <div className="hidden sm:block h-8 w-px bg-[var(--card-border)]" />
+                        <div className="hidden sm:block">
+                            <p className="text-sm font-bold text-[var(--foreground)]">{selectedCategory}</p>
+                            <div className="flex items-center gap-2">
+                                <span className={`badge ${diffStyle.bg} ${diffStyle.text} text-[10px] px-2 py-0.5`}>
+                                    {diffStyle.label}
+                                </span>
+                                <span className="text-[10px] text-[var(--foreground-muted)] font-medium">
+                                    Q {currentIndex + 1}/{questions.length}
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <p className="text-sm font-display font-bold text-[var(--foreground)] leading-tight">{selectedCategory}</p>
-                        <p className="text-[10px] text-[var(--muted)] uppercase tracking-widest font-semibold">{difficulty} level</p>
-                    </div>
-                </div>
 
-                {/* Center: Timer */}
-                <div className="hidden md:flex flex-col items-center gap-1.5">
+                    {/* Center - Timer */}
+                    <div className="flex items-center gap-4">
+                        <div className="hidden md:flex flex-col items-center">
+                            <div className="flex items-center gap-2">
+                                <Clock size={14} className={timerIsLow ? 'text-red-500' : 'text-[var(--foreground-muted)]'} />
+                                <span className={`font-mono text-lg font-bold tabular-nums ${timerIsLow ? 'text-red-500 animate-pulse' : 'text-[var(--foreground)]'}`}>
+                                    {timeLeft < 10 ? `0${timeLeft}` : timeLeft}s
+                                </span>
+                            </div>
+                            <div className="w-24 h-1.5 rounded-full bg-[var(--muted-bg)] overflow-hidden mt-1">
+                                <div
+                                    className={`h-full rounded-full transition-all duration-1000 ${timerIsLow ? 'bg-red-500' : 'bg-indigo-500'}`}
+                                    style={{ width: `${timerPct}%` }}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Mobile: just timer */}
+                        <div className="md:hidden flex items-center gap-1.5">
+                            <Clock size={14} className={timerIsLow ? 'text-red-500' : 'text-[var(--foreground-muted)]'} />
+                            <span className={`font-mono font-bold text-sm ${timerIsLow ? 'text-red-500' : ''}`}>
+                                {timeLeft < 10 ? `0${timeLeft}` : timeLeft}s
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Right */}
                     <div className="flex items-center gap-2">
-                        <Clock size={14} className={timerIsLow ? 'text-red-400' : 'text-[var(--muted)]'} />
-                        <span className={`font-mono text-lg font-bold tabular-nums ${timerIsLow ? 'text-red-400 animate-pulse' : 'text-[var(--foreground)]'}`}>
-                            00:{timeLeft < 10 ? `0${timeLeft}` : timeLeft}
-                        </span>
+                        <button
+                            onClick={() => toggleFlag(currentQ.id)}
+                            className={`p-2 rounded-xl transition-all ${flaggedQuestions.has(currentQ.id) ? 'text-amber-500 bg-amber-50 dark:bg-amber-500/10' : 'text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--muted-bg)]'}`}
+                            title={flaggedQuestions.has(currentQ.id) ? 'Unflag' : 'Flag for review'}
+                        >
+                            <Flag size={16} />
+                        </button>
+                        <button
+                            onClick={() => setSidebarOpen(!sidebarOpen)}
+                            className="p-2 rounded-xl text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--muted-bg)] transition-all"
+                        >
+                            {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
+                        </button>
                     </div>
-                    <div className="w-36 h-1 bg-slate-800 rounded-full overflow-hidden">
-                        <div
-                            className={`h-full rounded-full transition-all duration-1000 ${timerIsLow ? 'bg-red-500' : 'bg-blue-500'}`}
-                            style={{ width: `${timerPct}%` }}
-                        />
-                    </div>
-                </div>
-
-                {/* Right: User + toggle */}
-                <div className="flex items-center gap-3">
-                    <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[var(--muted-bg)] border border-[var(--card-border)] text-xs font-medium text-[var(--foreground)]">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                        {user?.name}
-                    </div>
-                    <button
-                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        className="p-2 bg-[var(--muted-bg)] rounded-lg text-[var(--muted)] hover:text-[var(--foreground)] transition-colors border border-[var(--card-border)] shadow-sm"
-                    >
-                        {isSidebarOpen ? <X size={16} /> : <Menu size={16} />}
-                    </button>
                 </div>
             </header>
 
             <div className="flex flex-1 overflow-hidden">
-                {/* Main */}
+                {/* ─── MAIN ─── */}
                 <main className="flex-1 overflow-y-auto">
-                    <div className="max-w-3xl mx-auto p-8 pb-24">
-                        {/* Q Status Row */}
-                        <div className="flex items-center justify-between mb-8">
-                            <div className="flex items-center gap-3">
-                                <span className="badge bg-blue-500/15 border border-blue-500/25 text-blue-400 text-[10px]">
-                                    Q {currentQuestionIndex + 1} / {questions.length}
-                                </span>
-                                <span className="text-xs text-[var(--muted)] font-bold uppercase tracking-wider">Proctored</span>
-                            </div>
-                            <span className="text-[10px] text-[var(--muted)] font-bold uppercase tracking-widest">Select one answer</span>
+                    <div className="max-w-3xl mx-auto p-4 lg:p-8 pb-24">
+                        {/* Same device indicator */}
+                        <div className="sm:hidden flex items-center gap-2 mb-4">
+                            <span className={`badge ${diffStyle.bg} ${diffStyle.text} text-[10px]`}>{diffStyle.label}</span>
+                            <span className="text-xs text-[var(--foreground-muted)] font-medium">
+                                Q {currentIndex + 1}/{questions.length}
+                            </span>
+                            {flaggedQuestions.has(currentQ.id) && (
+                                <Flag size={12} className="text-amber-500" />
+                            )}
                         </div>
 
                         {/* Question */}
-                        <div className="mb-8">
-                            <h2 className="text-xl md:text-2xl font-display font-bold text-[var(--foreground)] leading-snug mb-6">
-                                {currentQuestion?.question_text}
+                        <div className="mb-6">
+                            <span className="text-[10px] font-bold text-[var(--foreground-muted)] uppercase tracking-widest">
+                                Question {currentIndex + 1} of {questions.length}
+                            </span>
+                            <h2 className="text-xl lg:text-2xl font-display font-bold text-[var(--foreground)] leading-snug mt-3 mb-6">
+                                {currentQ?.question_text}
                             </h2>
-                            <div className="h-px bg-gradient-to-r from-blue-500/40 to-transparent" />
+                            <div className="h-px bg-gradient-to-r from-indigo-500/40 via-cyan-500/20 to-transparent" />
                         </div>
 
                         {/* Options */}
                         <div className="space-y-3">
                             {currentOptions?.map((opt, idx) => {
-                                const isSelected = selectedAnswers[currentQuestion.id] === idx;
+                                const isSelected = selectedAnswers[currentQ.id] === idx;
+                                let optionClass = 'quiz-option';
+                                if (isSelected) {
+                                    optionClass += ' quiz-option-selected';
+                                }
                                 return (
                                     <button
                                         key={idx}
-                                        onClick={() => handleAnswerSelect(currentQuestion.id, idx)}
-                                        className={`w-full group flex items-center gap-4 p-5 rounded-xl border text-left transition-all duration-200 ${isSelected
-                                            ? 'bg-blue-500/10 border-blue-500 shadow-xl shadow-blue-500/10'
-                                            : 'card bg-[var(--card-bg)] hover:bg-[var(--muted-bg)]'
-                                            }`}
+                                        onClick={() => handleAnswerSelect(currentQ.id, idx)}
+                                        className={`${optionClass} ${showFeedback && feedbackType === 'timeout' ? 'quiz-option-disabled' : ''}`}
                                     >
-                                        <div className={`w-9 h-9 rounded-lg border flex items-center justify-center shrink-0 font-mono font-bold text-sm transition-all ${isSelected
-                                            ? 'bg-blue-600 border-blue-500 text-white'
-                                            : 'bg-[var(--muted-bg)] border-[var(--card-border)] text-[var(--muted)] group-hover:border-blue-400'
-                                            }`}>
+                                        <div className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center shrink-0 font-mono font-bold text-sm transition-all ${
+                                            isSelected
+                                                ? 'bg-indigo-500 border-indigo-500 text-white'
+                                                : 'border-[var(--card-border)] text-[var(--foreground-muted)] group-hover:border-indigo-400'
+                                        }`}>
                                             {String.fromCharCode(65 + idx)}
                                         </div>
-                                        <span className={`text-sm font-medium leading-snug flex-1 ${isSelected ? 'text-[var(--foreground)]' : 'text-[var(--muted)] group-hover:text-[var(--foreground)]'}`}>
+                                        <span className={`text-sm font-medium leading-snug flex-1 ${isSelected ? 'text-[var(--foreground)]' : 'text-[var(--foreground-muted)] group-hover:text-[var(--foreground)]'}`}>
                                             {opt}
                                         </span>
                                         {isSelected && (
-                                            <CheckCircle2 size={20} className="text-blue-400 shrink-0" />
+                                            <CheckCircle2 size={20} className="text-indigo-500 shrink-0" />
                                         )}
                                     </button>
                                 );
                             })}
                         </div>
 
-                        {/* Nav */}
-                        <div className="flex items-center justify-between mt-10">
+                        {/* Navigation */}
+                        <div className="flex items-center justify-between mt-8">
                             <button
-                                onClick={() => setCurrentQuestionIndex(p => Math.max(0, p - 1))}
-                                disabled={currentQuestionIndex === 0}
+                                onClick={() => setCurrentIndex(p => Math.max(0, p - 1))}
+                                disabled={currentIndex === 0}
                                 className="btn-secondary text-sm disabled:opacity-30 disabled:cursor-not-allowed"
                             >
-                                Previous
+                                <ChevronLeft size={16} /> Previous
                             </button>
-                            {currentQuestionIndex < questions.length - 1 ? (
+
+                            {isLastQuestion ? (
                                 <button
-                                    onClick={() => setCurrentQuestionIndex(p => p + 1)}
-                                    className="btn-primary text-sm"
+                                    onClick={() => setShowConfirmSubmit(true)}
+                                    className="btn-primary text-sm bg-gradient-to-r from-emerald-500 to-emerald-600 shadow-emerald-500/30"
                                 >
-                                    Next <ArrowRight size={15} />
+                                    Submit Quiz <Send size={15} />
                                 </button>
                             ) : (
                                 <button
-                                    onClick={handleSubmitQuiz}
-                                    className="btn-primary text-sm bg-emerald-600 hover:bg-emerald-500 shadow-emerald-900/30"
+                                    onClick={() => setCurrentIndex(p => Math.min(questions.length - 1, p + 1))}
+                                    className="btn-primary text-sm"
                                 >
-                                    Submit Quiz <CheckCircle2 size={15} />
+                                    Next <ChevronRight size={16} />
                                 </button>
                             )}
                         </div>
                     </div>
                 </main>
 
-                {/* Sidebar */}
-                <aside className={`${isSidebarOpen ? 'w-72' : 'w-0'} shrink-0 transition-all duration-300 overflow-hidden`}>
-                    <div className="w-72 h-full flex flex-col bg-[var(--card-bg)] border-l border-[var(--card-border)] shadow-2xl">
-                        {/* Nav Header */}
+                {/* ─── SIDEBAR ─── */}
+                <aside className={`${sidebarOpen ? 'w-72' : 'w-0'} shrink-0 transition-all duration-300 overflow-hidden border-l border-[var(--card-border)]`}>
+                    <div className="w-72 h-full flex flex-col bg-[var(--card-bg)]">
+                        {/* Navigator Header */}
                         <div className="p-5 border-b border-[var(--card-border)]">
                             <div className="flex items-center gap-2 mb-4">
-                                <Layers size={14} className="text-[var(--muted)]" />
-                                <h3 className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest">Question Navigator</h3>
+                                <ListOrdered size={14} className="text-[var(--foreground-muted)]" />
+                                <h3 className="text-[10px] font-bold text-[var(--foreground-muted)] uppercase tracking-widest">Question Navigator</h3>
                             </div>
                             <div className="grid grid-cols-5 gap-2">
-                                {questions.map((_, idx) => {
-                                    const active = currentQuestionIndex === idx;
-                                    const answered = selectedAnswers[questions[idx].id] !== undefined;
-                                    const wrong = wrongAnswers[questions[idx].id];
+                                {questions.map((q, idx) => {
+                                    const active = currentIndex === idx;
+                                    const answered = selectedAnswers[q.id] !== undefined;
+                                    const wrong = wrongAnswers[q.id];
+                                    const flagged = flaggedQuestions.has(q.id);
                                     return (
                                         <button
                                             key={idx}
-                                            onClick={() => setCurrentQuestionIndex(idx)}
-                                            className={`h-9 w-9 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${active
-                                                ? 'bg-blue-600 text-white scale-110 shadow-lg shadow-blue-900/30'
-                                                : wrong
-                                                    ? 'bg-red-500/15 text-red-400 border border-red-500/30'
-                                                    : answered
-                                                        ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                                                        : 'bg-[var(--muted-bg)] text-[var(--muted)] border border-[var(--card-border)] hover:border-blue-400'
-                                                }`}
+                                            onClick={() => setCurrentIndex(idx)}
+                                            className={`relative h-10 rounded-xl flex items-center justify-center text-xs font-bold transition-all ${
+                                                active
+                                                    ? 'bg-indigo-500 text-white scale-110 shadow-lg shadow-indigo-500/30 ring-2 ring-indigo-300 dark:ring-indigo-400/50'
+                                                    : wrong
+                                                        ? 'bg-red-50 dark:bg-red-500/10 text-red-500 border border-red-200 dark:border-red-500/30'
+                                                        : answered
+                                                            ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30'
+                                                            : 'bg-[var(--muted-bg)] text-[var(--foreground-muted)] border border-[var(--card-border)] hover:border-indigo-400'
+                                            }`}
                                         >
-                                            {wrong ? <Bug size={12} /> : idx + 1}
+                                            {idx + 1}
+                                            {flagged && (
+                                                <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-500" />
+                                            )}
                                         </button>
                                     );
                                 })}
@@ -352,42 +406,114 @@ const Quiz = () => {
                         </div>
 
                         {/* Stats */}
-                        <div className="p-5 space-y-3">
-                            <StatCard label="Answered" value={answeredCount} color="text-blue-500 dark:text-blue-400" />
-                            <StatCard label="Remaining" value={questions.length - answeredCount} color="text-[var(--muted)]" />
-                            <StatCard label="Errors" value={Object.keys(wrongAnswers).length} color="text-red-500" />
+                        <div className="p-5 space-y-3 border-b border-[var(--card-border)]">
+                            <StatRow label="Answered" value={answeredCount} total={questions.length} color="text-emerald-500" />
+                            <StatRow label="Remaining" value={questions.length - answeredCount} total={questions.length} color="text-indigo-500" />
+                            <StatRow label="Flagged" value={flaggedCount} total={questions.length} color="text-amber-500" />
+                        </div>
+
+                        {/* Legend */}
+                        <div className="p-5 space-y-2.5">
+                            <p className="text-[10px] font-bold text-[var(--foreground-muted)] uppercase tracking-widest mb-3">Legend</p>
+                            <LegendItem color="bg-emerald-500" label="Answered" />
+                            <LegendItem color="bg-red-500" label="Incorrect" />
+                            <LegendItem color="bg-indigo-500" label="Current" />
+                            <LegendItem color="bg-amber-500" label="Flagged" />
+                            <LegendItem color="bg-[var(--muted-bg)] border border-[var(--card-border)]" label="Unanswered" />
                         </div>
 
                         {/* Submit */}
                         <div className="mt-auto p-5 border-t border-[var(--card-border)]">
                             <button
-                                onClick={handleSubmitQuiz}
-                                className="btn-primary w-full justify-center py-3.5 text-sm bg-blue-600 hover:bg-blue-500"
+                                onClick={() => setShowConfirmSubmit(true)}
+                                className="btn-primary w-full justify-center py-3 text-sm"
                             >
-                                Finish Session <ArrowRight size={15} />
+                                <Send size={15} /> Finish Quiz
                             </button>
                         </div>
                     </div>
                 </aside>
             </div>
 
-            {/* Wrong Answer Overlay */}
-            <div className={`fixed inset-0 z-[100] pointer-events-none transition-opacity duration-300 ${showBugs ? 'opacity-100' : 'opacity-0'}`}>
-                <div className="absolute inset-0 bg-red-950/20 backdrop-blur-[2px]" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center text-red-500">
-                    <Bug size={72} className="animate-bounce" />
-                    <span className="font-black text-xl tracking-tight mt-3">WRONG ANSWER</span>
-                </div>
+            {/* ─── Feedback Overlay ─── */}
+            <div className={`fixed inset-0 z-50 pointer-events-none transition-all duration-300 ${showFeedback ? 'opacity-100' : 'opacity-0'}`}>
+                {feedbackType === 'correct' && (
+                    <div className="absolute inset-0 bg-emerald-500/5 backdrop-blur-[1px]" />
+                )}
+                {feedbackType === 'wrong' && (
+                    <div className="absolute inset-0 bg-red-500/5 backdrop-blur-[1px]" />
+                )}
+                {feedbackType === 'timeout' && (
+                    <div className="absolute inset-0 bg-red-500/10 backdrop-blur-[2px]">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-center">
+                                <Clock size={48} className="text-red-500 mx-auto mb-2 animate-bounce" />
+                                <p className="text-red-500 font-bold text-lg">Time's Up!</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
+
+            {/* ─── Confirm Submit Modal ─── */}
+            {showConfirmSubmit && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+                    <div className="card p-8 rounded-2xl max-w-md w-full animate-scale-in shadow-2xl">
+                        <div className="text-center mb-6">
+                            <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-center justify-center mx-auto mb-4">
+                                <Send size={28} className="text-indigo-500" />
+                            </div>
+                            <h3 className="text-xl font-display font-bold text-[var(--foreground)] mb-2">Submit Quiz?</h3>
+                            <p className="text-sm text-[var(--foreground-muted)]">
+                                You have answered <strong className="text-[var(--foreground)]">{answeredCount}/{questions.length}</strong> questions.
+                                {questions.length - answeredCount > 0 && (
+                                    <span className="text-amber-500"> {questions.length - answeredCount} unanswered.</span>
+                                )}
+                            </p>
+                        </div>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowConfirmSubmit(false)}
+                                className="btn-secondary flex-1 justify-center py-3 text-sm"
+                            >
+                                Review Answers
+                            </button>
+                            <button
+                                onClick={handleSubmitQuiz}
+                                className="btn-primary flex-1 justify-center py-3 text-sm"
+                            >
+                                Submit Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
 
-const StatCard = ({ label, value, color }) => (
-    <div className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--page-bg)] border border-[var(--card-border)] shadow-sm">
-        <p className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest">{label}</p>
-        <p className={`text-xl font-display font-bold ${color}`}>{value}</p>
-    </div>
-);
+function StatRow({ label, value, total, color }) {
+    const pct = total > 0 ? (value / total) * 100 : 0;
+    return (
+        <div className="space-y-1">
+            <div className="flex items-center justify-between">
+                <p className="text-[10px] font-bold text-[var(--foreground-muted)] uppercase tracking-widest">{label}</p>
+                <p className={`text-xs font-bold ${color}`}>{value}/{total}</p>
+            </div>
+            <div className="progress-bar h-1.5">
+                <div className={`h-full rounded-full transition-all duration-500 ${color.replace('text-', 'bg-')}`} style={{ width: `${pct}%` }} />
+            </div>
+        </div>
+    );
+}
+
+function LegendItem({ color, label, border }) {
+    return (
+        <div className="flex items-center gap-2.5">
+            <div className={`w-4 h-4 rounded-md ${color} ${border || ''}`} />
+            <span className="text-xs text-[var(--foreground-muted)] font-medium">{label}</span>
+        </div>
+    );
+}
 
 export default Quiz;

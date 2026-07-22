@@ -1,194 +1,181 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Code, ShieldCheck, User, LogOut, Menu, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import { Menu, X, User, LogOut, ChevronDown, LayoutDashboard, Settings as SettingsIcon, BookOpen, Trophy, Code2, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import logo from '../assets/logo.png';
+import BrandLogo from './BrandLogo';
+
+const navItems = [
+    { to: '/', label: 'Home' },
+    { to: '/technologies', label: 'Technologies' },
+    { to: '/leaderboard', label: 'Leaderboard' },
+];
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const [userMenuOpen, setUserMenuOpen] = useState(false);
     const location = useLocation();
     const { user, logout } = useAuth();
 
     useEffect(() => {
-        const handleScroll = () => setScrolled(window.scrollY > 10);
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
+        const onScroll = () => setScrolled(window.scrollY > 20);
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
     }, []);
 
-    // Close mobile menu on route change
-    useEffect(() => setIsOpen(false), [location.pathname]);
+    useEffect(() => { setIsOpen(false); setUserMenuOpen(false); }, [location.pathname]);
 
-    const isActive = (path) => location.pathname === path;
+    const isActive = (path) => path === '/' ? location.pathname === '/' : location.pathname.startsWith(path);
 
     return (
-        <>
-            <nav className={`w-full transition-all duration-500 rounded-2xl ${scrolled ? 'glass-nav py-2 px-4' : 'bg-transparent py-4 px-2'}`}>
-                <div className="flex items-center justify-between">
-                    
-                    {/* Brand */}
-                    <Link to="/" className="flex items-center gap-3 group shrink-0">
-                        <div className="relative">
-                            <div className="absolute inset-0 rounded-full bg-cyan-500/20 blur-md group-hover:bg-cyan-400/40 transition-colors" />
-                            <img
-                                src={logo}
-                                alt="DeeBug"
-                                className="relative h-8 w-auto object-contain transition-transform duration-300 group-hover:scale-110"
-                            />
-                        </div>
-                        <span className="text-xl font-display font-bold text-white tracking-wide">
-                            Dee<span className="text-gradient">Bug</span>
-                        </span>
+        <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+            scrolled ? 'bg-white/90 backdrop-blur-xl shadow-sm border-b border-gray-200' : 'bg-transparent'
+        }`}>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex items-center justify-between h-16 lg:h-20">
+                    <Link to="/" className="flex items-center group shrink-0">
+                        <BrandLogo size="md" className="transition-transform duration-300 group-hover:scale-[1.02]" />
                     </Link>
 
-                    {/* Desktop Nav */}
-                    <div className="hidden md:flex items-center gap-2 bg-obsidian-900/60 p-1.5 rounded-xl border border-white/5 backdrop-blur-md">
-                        <NavLink to="/" active={isActive('/')} icon={<LayoutDashboard size={16} />} label="Home" />
-                        {user && <NavLink to="/dashboard" active={isActive('/dashboard')} icon={<LayoutDashboard size={16} />} label="Dashboard" />}
-                        <NavLink to="/quiz" active={isActive('/quiz')} icon={<Code size={16} />} label="Challenges" />
-                        {user?.role === 'admin' && (
-                            <NavLink to="/admin" active={isActive('/admin')} icon={<ShieldCheck size={16} />} label="Admin" />
+                    <nav className="hidden lg:flex items-center gap-1">
+                        {navItems.map(item => (
+                            <Link key={item.to} to={item.to}
+                                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                                    isActive(item.to) ? 'bg-[#163B34] text-white' : 'text-[#6B7280] hover:text-[#163B34] hover:bg-[#F7FAF9]'
+                                }`}>
+                                {item.label}
+                            </Link>
+                        ))}
+                        {user && (
+                            <Link to="/dashboard"
+                                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+                                    isActive('/dashboard') ? 'bg-[#163B34] text-white' : 'text-[#6B7280] hover:text-[#163B34] hover:bg-[#F7FAF9]'
+                                }`}>
+                                Dashboard
+                            </Link>
                         )}
-                    </div>
+                    </nav>
 
-                    {/* Right Actions */}
-                    <div className="hidden md:flex items-center gap-4">
+                    <div className="hidden lg:flex items-center gap-3">
                         {user ? (
-                            <>
-                                {/* User Info */}
-                                <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-obsidian-800/80 border border-white/10 hover:border-cyan-500/30 transition-colors">
-                                    <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shadow-[0_0_10px_rgba(0,240,255,0.2)]">
-                                        <User size={16} />
+                            <div className="relative">
+                                <button onClick={() => setUserMenuOpen(!userMenuOpen)}
+                                    className="flex items-center gap-3 pl-3 pr-2 py-1.5 rounded-xl hover:bg-[#F7FAF9] transition-all border border-transparent hover:border-gray-200">
+                                    <div className="w-8 h-8 rounded-lg bg-[#163B34] flex items-center justify-center text-white text-xs font-bold">
+                                        {user.name?.charAt(0).toUpperCase() || 'U'}
                                     </div>
-                                    <div className="leading-tight">
-                                        <p className="text-sm font-bold text-white">{user.name}</p>
-                                        <p className="text-[10px] text-cyan-400 uppercase tracking-wider font-semibold glow-text">{user.role}</p>
+                                    <div className="hidden xl:block text-left leading-tight">
+                                        <p className="text-sm font-semibold text-[#163B34]">{user.name}</p>
+                                        <p className="text-[10px] text-[#6B7280] font-medium">{user.role}</p>
                                     </div>
-                                </div>
-                                <button
-                                    onClick={logout}
-                                    className="p-2 text-obsidian-300 hover:text-amethyst-400 hover:bg-amethyst-500/10 rounded-lg transition-all duration-200"
-                                    title="Sign out"
-                                >
-                                    <LogOut size={18} />
+                                    <ChevronDown size={14} className="text-[#9CA3AF]" />
                                 </button>
-                            </>
+                                {userMenuOpen && (
+                                    <>
+                                        <div className="fixed inset-0" onClick={() => setUserMenuOpen(false)} />
+                                        <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-2xl shadow-xl overflow-hidden animate-scale-in z-50">
+                                            <div className="p-3 border-b border-gray-100">
+                                                <p className="text-sm font-semibold text-[#163B34]">{user.name}</p>
+                                                <p className="text-xs text-[#6B7280]">{user.email}</p>
+                                            </div>
+                                            <div className="p-2">
+                                                <DropdownItem icon={LayoutDashboard} label="Dashboard" to="/dashboard" />
+                                                <DropdownItem icon={User} label="Profile" to="/dashboard/profile" />
+                                                <DropdownItem icon={SettingsIcon} label="Settings" to="/dashboard/settings" />
+                                                {user.role === 'admin' && <DropdownItem icon={ShieldCheck} label="Admin" to="/dashboard/admin" />}
+                                            </div>
+                                            <div className="p-2 border-t border-gray-100">
+                                                <button onClick={logout}
+                                                    className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition-all">
+                                                    <LogOut size={16} /> Sign Out
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                         ) : (
-                            <>
-                                <Link
-                                    to="/login"
-                                    className="text-sm font-semibold text-obsidian-300 hover:text-white px-4 py-2 transition-colors duration-200"
-                                >
-                                    Sign In
-                                </Link>
-                                <Link
-                                    to="/register"
-                                    className="btn-neon px-6 py-2"
-                                >
-                                    Get Started
-                                </Link>
-                            </>
+                            <div className="flex items-center gap-2">
+                                <Link to="/login" className="btn-ghost text-sm font-semibold text-[#6B7280] hover:text-[#163B34]">Sign In</Link>
+                                <Link to="/register" className="btn-primary text-sm px-5 py-2.5">Get Started</Link>
+                            </div>
                         )}
                     </div>
 
-                    {/* Mobile Menu Toggle */}
-                    <div className="md:hidden flex items-center gap-2">
-                        <button
-                            onClick={() => setIsOpen(!isOpen)}
-                            className="p-2 text-obsidian-300 hover:text-white hover:bg-white/5 rounded-lg transition-all"
-                        >
+                    <div className="flex lg:hidden items-center">
+                        <button onClick={() => setIsOpen(!isOpen)}
+                            className="p-2 rounded-xl text-[#6B7280] hover:bg-[#F7FAF9] transition-all">
                             {isOpen ? <X size={24} /> : <Menu size={24} />}
                         </button>
                     </div>
                 </div>
-            </nav>
+            </div>
 
-            {/* Mobile Sheet */}
-            <div className={`fixed inset-0 z-[100] md:hidden transition-all duration-300 ${isOpen ? 'visible' : 'invisible'}`}>
-                {/* Backdrop */}
-                <div
-                    className={`absolute inset-0 bg-obsidian-950/80 backdrop-blur-md transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}
-                    onClick={() => setIsOpen(false)}
-                />
-                {/* Drawer */}
-                <div className={`absolute top-0 right-0 h-full w-72 glass-panel shadow-2xl transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-                    <div className="flex flex-col h-full pt-16 px-6 pb-8">
-                        <button onClick={() => setIsOpen(false)} className="absolute top-6 right-6 text-obsidian-300 hover:text-white">
-                            <X size={24} />
-                        </button>
-
-                        <div className="space-y-2 flex-1 mt-8">
-                            <MobileNavLink to="/" active={isActive('/')} icon={<LayoutDashboard size={18} />} label="Home" />
-                            {user && <MobileNavLink to="/dashboard" active={isActive('/dashboard')} icon={<LayoutDashboard size={18} />} label="Dashboard" />}
-                            <MobileNavLink to="/quiz" active={isActive('/quiz')} icon={<Code size={18} />} label="Challenges" />
-                            {user?.role === 'admin' && (
-                                <MobileNavLink to="/admin" active={isActive('/admin')} icon={<ShieldCheck size={18} />} label="Admin" />
+            {/* Mobile Drawer */}
+            <div className={`fixed inset-0 z-50 lg:hidden transition-all duration-300 ${isOpen ? 'visible' : 'invisible'}`}>
+                <div className={`absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}
+                    onClick={() => setIsOpen(false)} />
+                <div className={`absolute top-0 right-0 h-full w-72 bg-white border-l border-gray-200 shadow-2xl transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                    <div className="flex flex-col h-full pt-20 px-5 pb-8">
+                        <button onClick={() => setIsOpen(false)} className="absolute top-6 right-5 p-2 text-[#6B7280] hover:text-[#163B34]"><X size={22} /></button>
+                        <div className="space-y-1 flex-1">
+                            <MobileNavItem to="/" label="Home" icon={BookOpen} active={isActive('/')} />
+                            <MobileNavItem to="/technologies" label="Technologies" icon={Code2} active={isActive('/technologies')} />
+                            <MobileNavItem to="/leaderboard" label="Leaderboard" icon={Trophy} active={isActive('/leaderboard')} />
+                            {user && (
+                                <>
+                                    <div className="divider my-3" />
+                                    <MobileNavItem to="/dashboard" label="Dashboard" icon={LayoutDashboard} active={isActive('/dashboard')} />
+                                    <MobileNavItem to="/dashboard/profile" label="Profile" icon={User} active={isActive('/dashboard/profile')} />
+                                    <MobileNavItem to="/dashboard/settings" label="Settings" icon={SettingsIcon} active={isActive('/dashboard/settings')} />
+                                </>
                             )}
                         </div>
-
-                        <div className="pt-6 border-t border-white/10">
+                        <div className="pt-6 border-t border-gray-200">
                             {user ? (
                                 <div className="space-y-4">
-                                    <div className="flex items-center gap-3 p-4 rounded-xl bg-obsidian-800/50 border border-white/5 shadow-sm">
-                                        <div className="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
-                                            <User size={18} />
+                                    <div className="flex items-center gap-3 p-4 rounded-xl bg-[#F7FAF9]">
+                                        <div className="w-10 h-10 rounded-lg bg-[#163B34] flex items-center justify-center text-white font-bold">
+                                            {user.name?.charAt(0).toUpperCase()}
                                         </div>
                                         <div>
-                                            <p className="text-sm font-bold text-white">{user.name}</p>
-                                            <p className="text-xs text-cyan-400 uppercase tracking-wider font-semibold glow-text">{user.role}</p>
+                                            <p className="text-sm font-semibold text-[#163B34]">{user.name}</p>
+                                            <p className="text-xs text-[#6B7280]">{user.email}</p>
                                         </div>
                                     </div>
-                                    <button
-                                        onClick={logout}
-                                        className="w-full flex items-center justify-center gap-3 p-3 rounded-xl text-amethyst-400 hover:bg-amethyst-500/10 border border-transparent hover:border-amethyst-500/20 font-medium text-sm transition-all"
-                                    >
-                                        <LogOut size={18} /> Sign Out
+                                    <button onClick={logout}
+                                        className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold text-red-500 hover:bg-red-50 border border-gray-200 transition-all">
+                                        <LogOut size={16} /> Sign Out
                                     </button>
                                 </div>
                             ) : (
                                 <div className="space-y-3">
-                                    <Link to="/login" className="btn-glass w-full">
-                                        Sign In
-                                    </Link>
-                                    <Link to="/register" className="btn-neon w-full">
-                                        Get Started
-                                    </Link>
+                                    <Link to="/login" onClick={() => setIsOpen(false)} className="btn-secondary w-full justify-center text-sm">Sign In</Link>
+                                    <Link to="/register" onClick={() => setIsOpen(false)} className="btn-primary w-full justify-center text-sm">Get Started</Link>
                                 </div>
                             )}
                         </div>
                     </div>
                 </div>
             </div>
-        </>
+        </header>
     );
 }
 
-function NavLink({ to, active, icon, label }) {
+function DropdownItem({ icon: Icon, label, to }) {
     return (
-        <Link
-            to={to}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all duration-300 ${active
-                ? 'bg-cyan-500/15 text-cyan-400 shadow-[inset_0_0_10px_rgba(0,240,255,0.1)]'
-                : 'text-obsidian-300 hover:text-white hover:bg-white/5'
-                }`}
-        >
-            {icon}
-            {label}
+        <Link to={to} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#6B7280] hover:text-[#163B34] hover:bg-[#F7FAF9] transition-all">
+            <Icon size={16} /> {label}
         </Link>
     );
 }
 
-function MobileNavLink({ to, active, icon, label }) {
+function MobileNavItem({ to, label, icon: Icon, active }) {
     return (
-        <Link
-            to={to}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${active
-                ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-[0_0_15px_rgba(0,240,255,0.05)]'
-                : 'text-obsidian-300 hover:text-white hover:bg-white/5'
-                }`}
-        >
-            {icon}
-            {label}
+        <Link to={to} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+            active ? 'bg-[#163B34] text-white' : 'text-[#6B7280] hover:text-[#163B34] hover:bg-[#F7FAF9]'
+        }`}>
+            <Icon size={18} /> {label}
         </Link>
     );
 }

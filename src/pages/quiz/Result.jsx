@@ -1,139 +1,148 @@
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Trophy, Home, RotateCcw, Sparkles, Download, Share2, CheckCircle2, XCircle } from "lucide-react";
+import { Trophy, Home, RotateCcw, Download, CheckCircle2, XCircle, Clock, Award, BarChart3, Sparkles, Linkedin } from "lucide-react";
+import Navbar from '../../components/Navbar';
+import Footer from '../../components/Footer';
 
 export default function Result() {
     const location = useLocation();
-    const { score, total } = location.state || { score: 0, total: 0 };
-    const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
+    const { score = 0, total = 0, percentage = 0, category = 'Web Development', difficulty = 'beginner', timeTaken = 0 } = location.state || {};
+    const [animateScore, setAnimateScore] = useState(0);
+    const [showConfetti, setShowConfetti] = useState(percentage >= 70);
 
-    const getGrade = () => {
-        if (percentage >= 90) return { label: "Exceptional", color: "text-yellow-400", bg: "bg-yellow-500/10", border: "border-yellow-500/20", icon: "🏆" };
-        if (percentage >= 70) return { label: "Strong", color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", icon: "✅" };
-        if (percentage >= 50) return { label: "Qualified", color: "text-sky-400", bg: "bg-sky-500/10", border: "border-sky-500/20", icon: "📋" };
-        return { label: "Needs Work", color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/20", icon: "📚" };
-    };
+    const passed = percentage >= 70;
+    const minutes = Math.floor(timeTaken / 60);
+    const secs = timeTaken % 60;
+    const circumference = 2 * Math.PI * 60;
+    const offset = circumference - (animateScore / 100) * circumference;
 
-    const grade = getGrade();
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            const interval = setInterval(() => {
+                setAnimateScore(prev => {
+                    if (prev >= percentage) { clearInterval(interval); return percentage; }
+                    return prev + 1;
+                });
+            }, 20);
+            return () => clearInterval(interval);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [percentage]);
+
+    useEffect(() => {
+        if (showConfetti) {
+            const timer = setTimeout(() => setShowConfetti(false), 4000);
+            return () => clearTimeout(timer);
+        }
+    }, []);
+
+    const grade = passed
+        ? { label: percentage >= 90 ? "Exceptional" : "Commendable", color: "#2ECC71", gradient: "from-[#2ECC71] to-[#27AE60]" }
+        : { label: "Keep Practicing", color: "#E74C3C", gradient: "from-[#E74C3C] to-[#C0392B]" };
 
     return (
-        <div className="min-h-screen bg-[var(--page-bg)] flex items-center justify-center p-6 relative overflow-hidden transition-colors duration-300">
-            {/* Ambient */}
-            <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full"
-                    style={{ background: 'radial-gradient(circle at center, rgba(99,102,241,0.08) 0%, transparent 65%)' }} />
-                <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-600/8 rounded-full blur-[120px]" />
-                <div className="absolute bottom-[-20%] right-[-10%] w-[40%] h-[40%] bg-sky-600/6 rounded-full blur-[120px]" />
-            </div>
+        <div className="min-h-screen bg-[#2D1511] flex flex-col">
+            {showConfetti && passed && (
+                <div className="fixed inset-0 z-50 pointer-events-none overflow-hidden">
+                    {Array.from({ length: 50 }).map((_, i) => (
+                        <div key={i} className="absolute w-2 h-2 rounded-sm"
+                            style={{
+                                left: `${Math.random() * 100}%`, top: '-2%',
+                                backgroundColor: ['#B66A36', '#D88A52', '#F39C12', '#2ECC71', '#E74C3C'][i % 5],
+                                animation: `confetti-fall ${2 + Math.random() * 3}s linear ${Math.random() * 2}s infinite`,
+                                transform: `rotate(${Math.random() * 360}deg)`,
+                                width: `${4 + Math.random() * 6}px`, height: `${4 + Math.random() * 6}px`,
+                            }} />
+                    ))}
+                </div>
+            )}
+            <Navbar />
+            <div className="flex-1 flex items-center justify-center p-4 sm:p-6 pt-24 lg:pt-28">
+                <div className="w-full max-w-2xl animate-fade-up">
+                    <div className="bg-[#37201B] border border-[#B66A36]/25 rounded-2xl overflow-hidden shadow-2xl">
+                        {/* Header */}
+                        <div className="p-8 lg:p-10 text-center bg-gradient-to-b from-[#3A211C] to-[#37201B]">
+                            <div className="relative inline-flex mb-5">
+                                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#B66A36] to-[#D88A52] flex items-center justify-center text-5xl shadow-2xl">
+                                    {passed ? '🏆' : '📚'}
+                                </div>
+                                {passed && <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-[#B66A36] flex items-center justify-center shadow-lg"><Sparkles size={14} className="text-white" /></div>}
+                            </div>
+                            <h1 className="text-3xl lg:text-4xl font-display font-extrabold text-white mb-2">{passed ? 'Congratulations!' : 'Keep Going!'}</h1>
+                            <p className="text-[#A89B96] text-sm mb-6">{passed ? 'You passed!' : 'Review and try again.'}</p>
 
-            <div className="w-full max-w-lg z-10 animate-fade-in">
-                <div className="glass rounded-2xl overflow-hidden">
-                    {/* Trophy Header */}
-                    <div className="p-8 text-center border-b border-[var(--card-border)]">
-                        {/* Badge */}
-                        <div className="relative inline-flex mb-6">
-                            <div className={`w-20 h-20 rounded-2xl ${grade.bg} border ${grade.border} flex items-center justify-center text-4xl shadow-2xl`}>
-                                {grade.icon}
+                            {/* Circular Score */}
+                            <div className="circular-progress w-36 h-36 mx-auto mb-4">
+                                <svg width="144" height="144" viewBox="0 0 144 144">
+                                    <circle cx="72" cy="72" r="60" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
+                                    <circle cx="72" cy="72" r="60" fill="none" stroke={passed ? '#2ECC71' : '#E74C3C'} strokeWidth="8" strokeLinecap="round"
+                                        strokeDasharray={circumference} strokeDashoffset={offset} transform="rotate(-90, 72, 72)"
+                                        style={{ transition: 'stroke-dashoffset 2s ease-out' }} />
+                                </svg>
+                                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span className={`text-4xl font-display font-extrabold ${passed ? 'text-[#2ECC71]' : 'text-[#E74C3C]'}`}>{animateScore}%</span>
+                                    <span className="text-[10px] text-[#A89B96] font-semibold uppercase">Score</span>
+                                </div>
                             </div>
-                            <div className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center shadow-lg">
-                                <Sparkles size={13} className="text-white" />
-                            </div>
-                        </div>
-
-                        <h1 className="text-3xl font-display font-bold text-[var(--foreground)] mb-1.5">
-                            Assessment Complete
-                        </h1>
-                        <p className="text-[var(--muted)] text-sm">
-                            Your results have been recorded and saved to your profile.
-                        </p>
-                    </div>
-
-                    {/* Stats */}
-                    <div className="p-6 space-y-4">
-                        {/* Score Bar */}
-                        <div className="card p-5">
-                            <div className="flex items-center justify-between mb-3">
-                                <span className="text-xs font-bold text-[var(--muted)] uppercase tracking-widest">Your Score</span>
-                                <span className={`text-2xl font-display font-bold ${grade.color}`}>{percentage}%</span>
-                            </div>
-                            <div className="h-2 bg-[var(--muted-bg)] rounded-full overflow-hidden">
-                                <div
-                                    className={`h-full rounded-full transition-all duration-1000 ${percentage >= 70 ? 'bg-emerald-500' : percentage >= 50 ? 'bg-sky-500' : 'bg-red-500'}`}
-                                    style={{ width: `${percentage}%` }}
-                                />
-                            </div>
-                            <div className="flex justify-between mt-2">
-                                <span className="text-[10px] text-[var(--muted)] font-medium">0</span>
-                                <span className="text-[10px] text-[var(--muted)] font-medium">100</span>
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#B66A36]/15 text-[#D88A52] border border-[#B66A36]/30">
+                                Grade: {grade.label}
                             </div>
                         </div>
 
-                        {/* Stats Grid */}
-                        <div className="grid grid-cols-3 gap-3">
-                            <StatBox
-                                label="Correct"
-                                value={score}
-                                icon={<CheckCircle2 size={15} className="text-emerald-400" />}
-                                color="text-emerald-400"
-                            />
-                            <StatBox
-                                label="Wrong"
-                                value={total - score}
-                                icon={<XCircle size={15} className="text-red-400" />}
-                                color="text-red-400"
-                            />
-                            <StatBox
-                                label="Total"
-                                value={total}
-                                icon={<Trophy size={15} className="text-blue-400" />}
-                                color="text-blue-400"
-                            />
-                        </div>
+                        {/* Stats */}
+                        <div className="p-6 lg:p-8 space-y-5">
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                {[
+                                    { label: 'Correct', value: score, icon: CheckCircle2, color: 'text-[#2ECC71]', bg: 'bg-[#2ECC71]/10' },
+                                    { label: 'Wrong', value: total - score, icon: XCircle, color: 'text-[#E74C3C]', bg: 'bg-[#E74C3C]/10' },
+                                    { label: 'Total', value: total, icon: BarChart3, color: 'text-[#D88A52]', bg: 'bg-[#B66A36]/10' },
+                                    { label: 'Time', value: `${minutes}:${secs < 10 ? `0${secs}` : secs}`, icon: Clock, color: 'text-[#B66A36]', bg: 'bg-[#B66A36]/10' },
+                                ].map(s => (
+                                    <div key={s.label} className={`p-4 rounded-xl ${s.bg} border border-transparent text-center group hover:shadow-sm transition-all`}>
+                                        <s.icon size={16} className={`${s.color} mx-auto mb-2 group-hover:scale-110 transition-transform`} />
+                                        <p className={`text-xl font-display font-bold ${s.color}`}>{s.value}</p>
+                                        <p className="text-[10px] text-[#A89B96] font-semibold uppercase tracking-wider mt-0.5">{s.label}</p>
+                                    </div>
+                                ))}
+                            </div>
 
-                        {/* Grade Badge */}
-                        <div className={`flex items-center justify-center gap-2 p-3 rounded-xl ${grade.bg} border ${grade.border}`}>
-                            <span className={`text-sm font-bold ${grade.color}`}>Grade: {grade.label}</span>
-                        </div>
-                    </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="p-4 rounded-xl bg-[#3A211C] border border-[#B66A36]/20">
+                                    <p className="text-[10px] font-semibold text-[#A89B96] uppercase mb-1">Technology</p>
+                                    <p className="text-sm font-bold text-white">{category}</p>
+                                </div>
+                                <div className="p-4 rounded-xl bg-[#3A211C] border border-[#B66A36]/20">
+                                    <p className="text-[10px] font-semibold text-[#A89B96] uppercase mb-1">Difficulty</p>
+                                    <p className="text-sm font-bold text-white capitalize">{difficulty}</p>
+                                </div>
+                            </div>
 
-                    {/* Actions */}
-                    <div className="p-6 pt-0 space-y-3">
-                        <div className="grid grid-cols-2 gap-3">
-                            <Link
-                                to="/quiz"
-                                className="btn-primary justify-center py-3 text-sm"
-                            >
-                                <RotateCcw size={15} /> New Quiz
-                            </Link>
-                            <Link
-                                to="/dashboard"
-                                className="btn-secondary justify-center py-3 text-sm"
-                            >
-                                <Home size={15} /> Dashboard
-                            </Link>
-                        </div>
-
-                        <div className="flex items-center justify-center gap-6 pt-1">
-                            <button className="flex items-center gap-1.5 text-xs text-[var(--muted)] hover:text-blue-400 transition-colors font-medium">
-                                <Download size={13} /> Save Transcript
-                            </button>
-                            <div className="w-1 h-1 rounded-full bg-[var(--card-border)]" />
-                            <button className="flex items-center gap-1.5 text-xs text-[var(--muted)] hover:text-blue-400 transition-colors font-medium">
-                                <Share2 size={13} /> Share Result
-                            </button>
+                            <div className="space-y-3">
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button onClick={() => window.history.back()} className="btn-primary justify-center py-3.5 text-sm">
+                                        <RotateCcw size={15} /> Retry
+                                    </button>
+                                    <Link to="/technologies" className="btn-secondary justify-center py-3.5 text-sm">
+                                        <Home size={15} /> New Track
+                                    </Link>
+                                </div>
+                                {passed && (
+                                    <div className="flex items-center justify-center gap-3 pt-2">
+                                        <Link to="/certificate/view" state={{ category, percentage, score, total, difficulty }}
+                                            className="flex items-center gap-1.5 text-xs font-semibold text-[#D88A52] hover:text-[#B66A36] transition-colors">
+                                            <Download size={13} /> View Certificate
+                                        </Link>
+                                        <button className="flex items-center gap-1.5 text-xs font-semibold text-[#A89B96] hover:text-white transition-colors">
+                                            <Linkedin size={13} /> Share
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    );
-}
-
-function StatBox({ label, value, icon, color }) {
-    return (
-        <div className="card p-4 text-center group hover:bg-[var(--muted-bg)] transition-all">
-            <div className="flex justify-center mb-2 group-hover:scale-110 transition-transform">{icon}</div>
-            <p className={`text-xl font-display font-bold ${color}`}>{value}</p>
-            <p className="text-[10px] text-[var(--muted)] font-bold uppercase tracking-wider mt-0.5">{label}</p>
+            <Footer />
         </div>
     );
 }
