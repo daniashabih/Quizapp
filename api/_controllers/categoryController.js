@@ -11,7 +11,7 @@ const createCategory = async (req, res) => {
             const id = await Category.create(name);
             res.status(201).json({ message: 'Category created', id, name });
         } catch (err) {
-            if (err.code === 'ER_DUP_ENTRY') {
+            if (err.code === 'P2002') {
                 return res.status(400).json({ message: 'Category already exists' });
             }
             throw err;
