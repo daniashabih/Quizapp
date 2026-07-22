@@ -17,7 +17,7 @@ const technologies = [
     { name: 'React', level: 'Advanced', questions: 180, color: '#61DAFB' },
     { name: 'Node.js', level: 'Intermediate', questions: 160, color: '#339933' },
     { name: 'Python', level: 'Intermediate', questions: 190, color: '#3776AB' },
-    { name: 'Tailwind CSS', level: 'Intermediate', questions: 100, color: '#06B6D4' },
+    { name: 'Tailwind CSS', level: 'Intermediate', questions: 100, color: '#289B7D' },
     { name: 'MongoDB', level: 'Intermediate', questions: 90, color: '#47A248' },
 ];
 

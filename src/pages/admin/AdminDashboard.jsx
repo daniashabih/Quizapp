@@ -195,14 +195,14 @@ const AdminDashboard = () => {
     const difficultyBadge = (d) => {
         const map = {
             expert: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border-amber-200 dark:border-amber-500/20',
-            intermediate: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20',
+            intermediate: 'bg-[#EAF5F2] text-[#163B34] border-[#D4EBE5]',
             beginner: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20',
         };
         return map[d] || map.beginner;
     };
 
     const stats = [
-        { label: 'Total Questions', value: questions.length, icon: BookOpen, gradient: 'from-indigo-500 to-cyan-500' },
+        { label: 'Total Questions', value: questions.length, icon: BookOpen, gradient: 'from-[#163B34] to-[#289B7D]' },
         { label: 'Categories', value: categories.length, icon: FolderOpen, gradient: 'from-amber-500 to-orange-500' },
         { label: 'Registered Users', value: allUsers.length || '—', icon: Users, gradient: 'from-emerald-500 to-teal-500' },
     ];
@@ -288,13 +288,13 @@ const AdminDashboard = () => {
                             {filteredQuestions.length === 0 ? (
                                 <tr>
                                     <td colSpan={5} className="px-6 py-16 text-center text-sm text-[var(--foreground-muted)]">
-                                        No questions found. <button onClick={() => openQuestionModal(null)} className="text-indigo-500 font-semibold hover:text-indigo-400">Add one</button>
+                                        No questions found. <button onClick={() => openQuestionModal(null)} className="text-[#163B34] font-semibold hover:text-[#289B7D]">Add one</button>
                                     </td>
                                 </tr>
                             ) : filteredQuestions.map((q) => (
                                 <tr key={q.id} className="hover:bg-[var(--muted-bg)] transition-colors group">
                                     <td className="px-6 py-4">
-                                        <span className="badge-indigo text-[10px]">{q.category}</span>
+                                        <span className="badge-emerald text-[10px]">{q.category}</span>
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`badge border text-[10px] ${difficultyBadge(q.difficulty)}`}>
@@ -311,8 +311,7 @@ const AdminDashboard = () => {
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button onClick={() => openQuestionModal(q)}
-                                                className="p-1.5 rounded-lg text-[var(--foreground-muted)] hover:text-indigo-500 hover:bg-[var(--muted-bg)] transition-all">
+                                            <button onClick={() => openQuestionModal(q)}                                                    className="p-1.5 rounded-lg text-[var(--foreground-muted)] hover:text-[#163B34] hover:bg-[var(--muted-bg)] transition-all">
                                                 <Edit2 size={14} />
                                             </button>
                                             <button onClick={() => handleDelete(q.id)}
@@ -429,8 +428,7 @@ const AdminDashboard = () => {
                                     <div key={cat.id} className="flex items-center justify-between p-3.5 card rounded-xl hover:bg-[var(--muted-bg)] transition-colors">
                                         <span className="text-sm font-semibold text-[var(--foreground)]">{cat.name}</span>
                                         <div className="flex gap-1.5">
-                                            <button onClick={() => { setEditingCategoryId(cat.id); setNewCategory(cat.name); }}
-                                                className="p-1.5 rounded-lg text-[var(--foreground-muted)] hover:text-indigo-500 hover:bg-[var(--muted-bg)] transition-all">
+                                            <button onClick={() => { setEditingCategoryId(cat.id); setNewCategory(cat.name); }}                                                    className="p-1.5 rounded-lg text-[var(--foreground-muted)] hover:text-[#163B34] hover:bg-[var(--muted-bg)] transition-all">
                                                 <Edit2 size={14} />
                                             </button>
                                             <button onClick={() => handleDeleteCategory(cat.id)}
@@ -466,13 +464,13 @@ const AdminDashboard = () => {
                                     Upload a CSV or XLSX file. Download our template to see the required format.
                                 </p>
                                 <button type="button" onClick={downloadTemplate}
-                                    className="text-xs font-semibold text-indigo-500 hover:text-indigo-400 flex items-center gap-1">
+                                    className="text-xs font-semibold text-[#163B34] hover:text-[#289B7D] flex items-center gap-1">
                                     <Download size={12} /> Download Template
                                 </button>
                             </div>
                             <input type="file" accept=".csv,.xlsx,.xls"
                                 onChange={(e) => setImportFile(e.target.files[0])}
-                                className="input-field file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-500/10 file:text-indigo-600 dark:file:text-indigo-400" />
+                                className="input-field file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#EAF5F2] file:text-[#163B34]" />
                             <div className="flex gap-3">
                                 <button type="button" onClick={() => { setIsImportModalOpen(false); setImportFile(null); }}
                                     className="btn-secondary flex-1 justify-center text-sm">Cancel</button>
