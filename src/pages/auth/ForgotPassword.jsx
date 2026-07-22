@@ -29,8 +29,7 @@ export default function ForgotPassword() {
         <div className="min-h-screen bg-[var(--page-bg)] flex flex-col">
             <Navbar />
             <div className="flex-1 flex items-center justify-center p-4 sm:p-6 pt-24">
-                <div className="w-full max-w-md animate-fade-up">
-                    <Link to="/login" className="inline-flex items-center gap-2 text-sm text-[var(--foreground-muted)] hover:text-indigo-500 transition-colors mb-8">
+                <div className="w-full max-w-md animate-fade-up">                        <Link to="/login" className="inline-flex items-center gap-2 text-sm text-[var(--foreground-muted)] hover:text-[#163B34] transition-colors mb-8">
                         <ArrowLeft size={16} /> Back to Login
                     </Link>
 
@@ -38,8 +37,8 @@ export default function ForgotPassword() {
                         {!submitted ? (
                             <>
                                 <div className="text-center mb-8">
-                                    <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-center justify-center mx-auto mb-4">
-                                        <Mail size={28} className="text-indigo-500" />
+                                    <div className="w-16 h-16 rounded-2xl bg-[#EAF5F2] border border-[#D4EBE5] flex items-center justify-center mx-auto mb-4">
+                                        <Mail size={28} className="text-[#163B34]" />
                                     </div>
                                     <h1 className="text-2xl font-display font-bold text-[var(--foreground)] mb-2">Forgot Password?</h1>
                                     <p className="text-sm text-[var(--foreground-muted)]">No worries, we'll send you reset instructions.</p>
@@ -85,7 +84,7 @@ export default function ForgotPassword() {
                                 <p className="text-sm text-[var(--foreground-muted)] mb-6">
                                     We've sent a password reset link to <strong className="text-[var(--foreground)]">{email}</strong>.
                                 </p>
-                                <button onClick={handleSubmit} className="text-sm font-semibold text-indigo-500 hover:text-indigo-400 transition-colors">
+                                <button onClick={handleSubmit} className="text-sm font-semibold text-[#163B34] hover:text-[#289B7D] transition-colors">
                                     Didn't receive it? Click to resend
                                 </button>
                             </div>

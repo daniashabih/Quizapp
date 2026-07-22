@@ -23,11 +23,11 @@ const levels = [
         label: 'Intermediate',
         desc: 'For experienced developers. Tests architectural patterns, best practices, and complex problem solving.',
         icon: Shield,
-        gradient: 'from-indigo-500 to-cyan-500',
-        color: 'text-indigo-600 dark:text-indigo-400',
-        bg: 'bg-indigo-50 dark:bg-indigo-500/10',
-        border: 'border-indigo-200 dark:border-indigo-500/20',
-        hoverBorder: 'hover:border-indigo-400 dark:hover:border-indigo-500/40',
+        gradient: 'from-[#289B7D] to-[#163B34]',
+        color: 'text-[#289B7D]',
+        bg: 'bg-[#EAF5F2]',
+        border: 'border-[#D4EBE5]',
+        hoverBorder: 'hover:border-[#289B7D]',
         details: { questions: '15-20', timer: '45s per Q', passing: '70%' },
     },
     {
@@ -63,14 +63,13 @@ export default function SelectLevel() {
                     {/* Back */}
                     <button
                         onClick={() => navigate(-1)}
-                        className="inline-flex items-center gap-2 text-sm text-[var(--foreground-muted)] hover:text-indigo-500 transition-colors mb-8"
+                        className="inline-flex items-center gap-2 text-sm text-[var(--foreground-muted)] hover:text-[#163B34] transition-colors mb-8"
                     >
                         <ArrowLeft size={16} /> Back to Technologies
                     </button>
 
                     {/* Header */}
-                    <div className="text-center mb-12">
-                        <div className="badge-indigo mx-auto mb-4">
+                    <div className="text-center mb-12">                            <div className="badge-emerald mx-auto mb-4">
                             <Sparkles size={12} />
                             {category} Track
                         </div>

@@ -11,8 +11,8 @@ import { useAuth } from '../../context/AuthContext';
 
 const difficultyColors = {
     beginner: { bg: 'bg-emerald-500', text: 'text-emerald-500', label: 'Beginner' },
-    intermediate: { bg: 'bg-indigo-500', text: 'text-indigo-500', label: 'Intermediate' },
-    expert: { bg: 'bg-amber-500', text: 'text-amber-500', label: 'Expert' },
+    intermediate: { bg: 'bg-[#289B7D]', text: 'text-[#289B7D]', label: 'Intermediate' },
+    expert: { bg: 'bg-[#163B34]', text: 'text-[#163B34]', label: 'Expert' },
 };
 
 const Quiz = () => {
@@ -32,7 +32,7 @@ const Quiz = () => {
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [wrongAnswers, setWrongAnswers] = useState({});
     const [showFeedback, setShowFeedback] = useState(false);
-    const [feedbackType, setFeedbackType] = useState(null); // 'correct' | 'wrong'
+    const [feedbackType, setFeedbackType] = useState(null);
     const [showConfirmSubmit, setShowConfirmSubmit] = useState(false);
     const [startTime, setStartTime] = useState(Date.now());
 
@@ -170,7 +170,7 @@ const Quiz = () => {
         return (
             <div className="min-h-screen bg-[var(--page-bg)] flex items-center justify-center">
                 <div className="text-center">
-                    <Loader2 size={40} className="animate-spin text-indigo-500 mx-auto mb-4" />
+                    <Loader2 size={40} className="animate-spin text-[#163B34] mx-auto mb-4" />
                     <p className="text-sm font-medium text-[var(--foreground-muted)] animate-pulse">Loading Quiz...</p>
                 </div>
             </div>
@@ -212,7 +212,6 @@ const Quiz = () => {
             {/* ─── TOP BAR ─── */}
             <header className="sticky top-0 z-40 bg-[var(--nav-bg)] backdrop-blur-xl border-b border-[var(--card-border)]">
                 <div className="flex items-center justify-between h-16 px-4 lg:px-6">
-                    {/* Left */}
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => navigate('/technologies')}
@@ -234,7 +233,6 @@ const Quiz = () => {
                         </div>
                     </div>
 
-                    {/* Center - Timer */}
                     <div className="flex items-center gap-4">
                         <div className="hidden md:flex flex-col items-center">
                             <div className="flex items-center gap-2">
@@ -245,13 +243,12 @@ const Quiz = () => {
                             </div>
                             <div className="w-24 h-1.5 rounded-full bg-[var(--muted-bg)] overflow-hidden mt-1">
                                 <div
-                                    className={`h-full rounded-full transition-all duration-1000 ${timerIsLow ? 'bg-red-500' : 'bg-indigo-500'}`}
+                                    className={`h-full rounded-full transition-all duration-1000 ${timerIsLow ? 'bg-red-500' : 'bg-[#163B34]'}`}
                                     style={{ width: `${timerPct}%` }}
                                 />
                             </div>
                         </div>
 
-                        {/* Mobile: just timer */}
                         <div className="md:hidden flex items-center gap-1.5">
                             <Clock size={14} className={timerIsLow ? 'text-red-500' : 'text-[var(--foreground-muted)]'} />
                             <span className={`font-mono font-bold text-sm ${timerIsLow ? 'text-red-500' : ''}`}>
@@ -260,11 +257,10 @@ const Quiz = () => {
                         </div>
                     </div>
 
-                    {/* Right */}
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => toggleFlag(currentQ.id)}
-                            className={`p-2 rounded-xl transition-all ${flaggedQuestions.has(currentQ.id) ? 'text-amber-500 bg-amber-50 dark:bg-amber-500/10' : 'text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--muted-bg)]'}`}
+                            className={`p-2 rounded-xl transition-all ${flaggedQuestions.has(currentQ.id) ? 'text-amber-500 bg-amber-50' : 'text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--muted-bg)]'}`}
                             title={flaggedQuestions.has(currentQ.id) ? 'Unflag' : 'Flag for review'}
                         >
                             <Flag size={16} />
@@ -283,7 +279,6 @@ const Quiz = () => {
                 {/* ─── MAIN ─── */}
                 <main className="flex-1 overflow-y-auto">
                     <div className="max-w-3xl mx-auto p-4 lg:p-8 pb-24">
-                        {/* Same device indicator */}
                         <div className="sm:hidden flex items-center gap-2 mb-4">
                             <span className={`badge ${diffStyle.bg} ${diffStyle.text} text-[10px]`}>{diffStyle.label}</span>
                             <span className="text-xs text-[var(--foreground-muted)] font-medium">
@@ -294,7 +289,6 @@ const Quiz = () => {
                             )}
                         </div>
 
-                        {/* Question */}
                         <div className="mb-6">
                             <span className="text-[10px] font-bold text-[var(--foreground-muted)] uppercase tracking-widest">
                                 Question {currentIndex + 1} of {questions.length}
@@ -302,10 +296,9 @@ const Quiz = () => {
                             <h2 className="text-xl lg:text-2xl font-display font-bold text-[var(--foreground)] leading-snug mt-3 mb-6">
                                 {currentQ?.question_text}
                             </h2>
-                            <div className="h-px bg-gradient-to-r from-indigo-500/40 via-cyan-500/20 to-transparent" />
+                            <div className="h-px bg-gradient-to-r from-[#163B34]/30 via-[#289B7D]/20 to-transparent" />
                         </div>
 
-                        {/* Options */}
                         <div className="space-y-3">
                             {currentOptions?.map((opt, idx) => {
                                 const isSelected = selectedAnswers[currentQ.id] === idx;
@@ -321,8 +314,8 @@ const Quiz = () => {
                                     >
                                         <div className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center shrink-0 font-mono font-bold text-sm transition-all ${
                                             isSelected
-                                                ? 'bg-indigo-500 border-indigo-500 text-white'
-                                                : 'border-[var(--card-border)] text-[var(--foreground-muted)] group-hover:border-indigo-400'
+                                                ? 'bg-[#163B34] border-[#163B34] text-white'
+                                                : 'border-[var(--card-border)] text-[var(--foreground-muted)] group-hover:border-[#163B34]'
                                         }`}>
                                             {String.fromCharCode(65 + idx)}
                                         </div>
@@ -330,14 +323,13 @@ const Quiz = () => {
                                             {opt}
                                         </span>
                                         {isSelected && (
-                                            <CheckCircle2 size={20} className="text-indigo-500 shrink-0" />
+                                            <CheckCircle2 size={20} className="text-[#163B34] shrink-0" />
                                         )}
                                     </button>
                                 );
                             })}
                         </div>
 
-                        {/* Navigation */}
                         <div className="flex items-center justify-between mt-8">
                             <button
                                 onClick={() => setCurrentIndex(p => Math.max(0, p - 1))}
@@ -350,7 +342,7 @@ const Quiz = () => {
                             {isLastQuestion ? (
                                 <button
                                     onClick={() => setShowConfirmSubmit(true)}
-                                    className="btn-primary text-sm bg-gradient-to-r from-emerald-500 to-emerald-600 shadow-emerald-500/30"
+                                    className="btn-primary text-sm"
                                 >
                                     Submit Quiz <Send size={15} />
                                 </button>
@@ -369,7 +361,6 @@ const Quiz = () => {
                 {/* ─── SIDEBAR ─── */}
                 <aside className={`${sidebarOpen ? 'w-72' : 'w-0'} shrink-0 transition-all duration-300 overflow-hidden border-l border-[var(--card-border)]`}>
                     <div className="w-72 h-full flex flex-col bg-[var(--card-bg)]">
-                        {/* Navigator Header */}
                         <div className="p-5 border-b border-[var(--card-border)]">
                             <div className="flex items-center gap-2 mb-4">
                                 <ListOrdered size={14} className="text-[var(--foreground-muted)]" />
@@ -387,12 +378,12 @@ const Quiz = () => {
                                             onClick={() => setCurrentIndex(idx)}
                                             className={`relative h-10 rounded-xl flex items-center justify-center text-xs font-bold transition-all ${
                                                 active
-                                                    ? 'bg-indigo-500 text-white scale-110 shadow-lg shadow-indigo-500/30 ring-2 ring-indigo-300 dark:ring-indigo-400/50'
+                                                    ? 'bg-[#163B34] text-white scale-110 shadow-lg shadow-[#163B34]/30 ring-2 ring-[#289B7D]/50'
                                                     : wrong
-                                                        ? 'bg-red-50 dark:bg-red-500/10 text-red-500 border border-red-200 dark:border-red-500/30'
+                                                        ? 'bg-red-50 text-red-500 border border-red-200'
                                                         : answered
-                                                            ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/30'
-                                                            : 'bg-[var(--muted-bg)] text-[var(--foreground-muted)] border border-[var(--card-border)] hover:border-indigo-400'
+                                                            ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                                                            : 'bg-[var(--muted-bg)] text-[var(--foreground-muted)] border border-[var(--card-border)] hover:border-[#163B34]'
                                             }`}
                                         >
                                             {idx + 1}
@@ -405,24 +396,21 @@ const Quiz = () => {
                             </div>
                         </div>
 
-                        {/* Stats */}
                         <div className="p-5 space-y-3 border-b border-[var(--card-border)]">
                             <StatRow label="Answered" value={answeredCount} total={questions.length} color="text-emerald-500" />
-                            <StatRow label="Remaining" value={questions.length - answeredCount} total={questions.length} color="text-indigo-500" />
+                            <StatRow label="Remaining" value={questions.length - answeredCount} total={questions.length} color="text-[#163B34]" />
                             <StatRow label="Flagged" value={flaggedCount} total={questions.length} color="text-amber-500" />
                         </div>
 
-                        {/* Legend */}
                         <div className="p-5 space-y-2.5">
                             <p className="text-[10px] font-bold text-[var(--foreground-muted)] uppercase tracking-widest mb-3">Legend</p>
                             <LegendItem color="bg-emerald-500" label="Answered" />
                             <LegendItem color="bg-red-500" label="Incorrect" />
-                            <LegendItem color="bg-indigo-500" label="Current" />
+                            <LegendItem color="bg-[#163B34]" label="Current" />
                             <LegendItem color="bg-amber-500" label="Flagged" />
                             <LegendItem color="bg-[var(--muted-bg)] border border-[var(--card-border)]" label="Unanswered" />
                         </div>
 
-                        {/* Submit */}
                         <div className="mt-auto p-5 border-t border-[var(--card-border)]">
                             <button
                                 onClick={() => setShowConfirmSubmit(true)}
@@ -460,8 +448,8 @@ const Quiz = () => {
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
                     <div className="card p-8 rounded-2xl max-w-md w-full animate-scale-in shadow-2xl">
                         <div className="text-center mb-6">
-                            <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-center justify-center mx-auto mb-4">
-                                <Send size={28} className="text-indigo-500" />
+                            <div className="w-16 h-16 rounded-2xl bg-[#EAF5F2] border border-[#D4EBE5] flex items-center justify-center mx-auto mb-4">
+                                <Send size={28} className="text-[#163B34]" />
                             </div>
                             <h3 className="text-xl font-display font-bold text-[var(--foreground)] mb-2">Submit Quiz?</h3>
                             <p className="text-sm text-[var(--foreground-muted)]">

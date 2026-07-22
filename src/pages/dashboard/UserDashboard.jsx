@@ -15,7 +15,6 @@ export default function UserDashboard() {
     const [stats, setStats] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Profile Edit
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState({ name: '', email: '' });
     const [isSaving, setIsSaving] = useState(false);
@@ -61,26 +60,25 @@ export default function UserDashboard() {
         ? (results.reduce((acc, r) => acc + parseFloat(r.percentage), 0) / results.length).toFixed(1)
         : 0;
 
-    const streakDays = 7; // Mock streak
+    const streakDays = 7;
     const xpLevel = Math.floor(results.length / 3) + 1;
     const xpProgress = results.length % 3;
 
     const badges = [
         { label: 'Quick Learner', icon: Zap, earned: results.length >= 1, color: 'text-amber-500' },
         { label: 'Dedicated', icon: Flame, earned: streakDays >= 7, color: 'text-orange-500' },
-        { label: 'Knowledge Seeker', icon: BookOpen, earned: results.length >= 5, color: 'text-indigo-500' },
+        { label: 'Knowledge Seeker', icon: BookOpen, earned: results.length >= 5, color: 'text-[#163B34]' },
         { label: 'Top Scorer', icon: Trophy, earned: results.filter(r => r.percentage >= 90).length >= 1, color: 'text-emerald-500' },
     ];
 
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-indigo-500/20 border-t-indigo-500" />
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#163B34]/20 border-t-[#163B34]" />
             </div>
         );
     }
 
-    // Weekly activity mock data
     const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const activityData = [3, 5, 2, 7, 4, 6, 1];
 
@@ -89,11 +87,11 @@ export default function UserDashboard() {
             {/* Welcome Card */}
             <div className="card overflow-hidden rounded-2xl">
                 <div className="p-6 lg:p-8 relative">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-500/5 to-cyan-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#163B34]/5 to-[#289B7D]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
                     <div className="relative">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                             <div className="flex items-center gap-4">
-                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center text-white font-display font-extrabold text-2xl shadow-xl">
+                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#163B34] to-[#289B7D] flex items-center justify-center text-white font-display font-extrabold text-2xl shadow-xl">
                                     {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                                 </div>
                                 <div>
@@ -106,9 +104,9 @@ export default function UserDashboard() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-4">
-                                <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20">
+                                <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-50 border border-amber-200">
                                     <Flame size={18} className="text-amber-500" />
-                                    <span className="text-sm font-bold text-amber-600 dark:text-amber-400">{streakDays} day streak</span>
+                                    <span className="text-sm font-bold text-amber-600">{streakDays} day streak</span>
                                 </div>
                                 <Link to="/dashboard/technologies" className="btn-primary text-sm">
                                     Take a Quiz
@@ -121,33 +119,32 @@ export default function UserDashboard() {
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <DashboardStat icon={Trophy} label="Total Quizzes" value={results.length} gradient="from-indigo-500 to-cyan-500" />
+                <DashboardStat icon={Trophy} label="Total Quizzes" value={results.length} gradient="from-[#163B34] to-[#289B7D]" />
                 <DashboardStat icon={BarChart3} label="Average Score" value={`${avgScore}%`} gradient="from-emerald-500 to-teal-500" />
                 <DashboardStat icon={Award} label="Certificates" value={stats.filter(s => s.best_score >= 80).length} gradient="from-amber-500 to-orange-500" />
-                <DashboardStat icon={Zap} label="XP Level" value={xpLevel} gradient="from-purple-500 to-pink-500" />
+                <DashboardStat icon={Zap} label="XP Level" value={xpLevel} gradient="from-[#289B7D] to-[#53AF97]" />
             </div>
 
             <div className="grid lg:grid-cols-3 gap-6">
                 {/* Left Column */}
                 <div className="space-y-6">
-                    {/* Profile Card */}
                     <div className="card p-6 rounded-2xl">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-sm font-bold text-[var(--foreground)]">Profile</h3>
                             <button onClick={() => setIsEditing(!isEditing)}
-                                className="p-2 rounded-lg text-[var(--foreground-muted)] hover:text-indigo-500 hover:bg-[var(--muted-bg)] transition-all">
+                                className="p-2 rounded-lg text-[var(--foreground-muted)] hover:text-[#163B34] hover:bg-[var(--muted-bg)] transition-all">
                                 {isEditing ? <X size={16} /> : <Edit3 size={16} />}
                             </button>
                         </div>
 
                         {!isEditing ? (
                             <div className="text-center">
-                                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center text-white font-display font-extrabold text-3xl mx-auto mb-4 shadow-xl">
+                                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#163B34] to-[#289B7D] flex items-center justify-center text-white font-display font-extrabold text-3xl mx-auto mb-4 shadow-xl">
                                     {user?.name?.charAt(0)?.toUpperCase()}
                                 </div>
                                 <h2 className="text-lg font-bold text-[var(--foreground)]">{user?.name}</h2>
                                 <p className="text-sm text-[var(--foreground-muted)] mb-3">{user?.email}</p>
-                                <span className="badge-indigo text-[10px]">{user?.role} Account</span>
+                                <span className="badge-emerald text-[10px]">{user?.role} Account</span>
                             </div>
                         ) : (
                             <form onSubmit={handleUpdateProfile} className="space-y-3">
@@ -173,7 +170,6 @@ export default function UserDashboard() {
                         )}
                     </div>
 
-                    {/* XP Card */}
                     <div className="card p-6 rounded-2xl">
                         <div className="flex items-center gap-3 mb-4">
                             <Zap size={18} className="text-amber-500" />
@@ -189,18 +185,17 @@ export default function UserDashboard() {
                         <p className="text-[10px] text-[var(--foreground-muted)] mt-1.5">{xpProgress}/3 quizzes to next level</p>
                     </div>
 
-                    {/* Badges */}
                     <div className="card p-6 rounded-2xl">
                         <h3 className="text-sm font-bold text-[var(--foreground)] mb-4">Achievements</h3>
                         <div className="grid grid-cols-2 gap-3">
                             {badges.map((b, i) => (
-                                <div key={i} className={`p-3 rounded-xl text-center border transition-all ${b.earned ? 'border-indigo-200 dark:border-indigo-500/20 bg-indigo-50 dark:bg-indigo-500/10' : 'border-[var(--card-border)] opacity-40'}`}>
+                                <div key={i} className={`p-3 rounded-xl text-center border transition-all ${b.earned ? 'border-[#D4EBE5] bg-[#EAF5F2]' : 'border-[var(--card-border)] opacity-40'}`}>
                                     <b.icon size={20} className={`${b.color} mx-auto mb-1`} />
                                     <p className="text-[10px] font-bold text-[var(--foreground)]">{b.label}</p>
                                 </div>
                             ))}
                         </div>
-                        <Link to="/dashboard/profile" className="text-xs font-medium text-indigo-500 hover:text-indigo-400 mt-3 inline-flex items-center gap-1">
+                        <Link to="/dashboard/profile" className="text-xs font-medium text-[#163B34] hover:text-[#289B7D] mt-3 inline-flex items-center gap-1">
                             View all achievements <ChevronRight size={12} />
                         </Link>
                     </div>
@@ -208,11 +203,10 @@ export default function UserDashboard() {
 
                 {/* Right Column */}
                 <div className="lg:col-span-2 space-y-6">
-                    {/* Weekly Activity */}
                     <div className="card p-6 rounded-2xl">
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-3">
-                                <Activity size={16} className="text-indigo-500" />
+                                <Activity size={16} className="text-[#163B34]" />
                                 <h3 className="text-sm font-bold text-[var(--foreground)]">Weekly Activity</h3>
                             </div>
                             <span className="text-[10px] font-medium text-[var(--foreground-muted)]">This week</span>
@@ -225,7 +219,7 @@ export default function UserDashboard() {
                                         <span className="text-[10px] text-[var(--foreground-muted)] font-medium">{activityData[i]}</span>
                                         <div className="w-full rounded-lg relative" style={{ height: '100px' }}>
                                             <div
-                                                className="absolute bottom-0 w-full rounded-lg bg-gradient-to-t from-indigo-500 to-cyan-500 transition-all duration-500 hover:opacity-80"
+                                                className="absolute bottom-0 w-full rounded-lg bg-gradient-to-t from-[#163B34] to-[#289B7D] transition-all duration-500 hover:opacity-80"
                                                 style={{ height: `${height}%`, minHeight: activityData[i] > 0 ? '8px' : '0' }}
                                             />
                                         </div>
@@ -236,14 +230,13 @@ export default function UserDashboard() {
                         </div>
                     </div>
 
-                    {/* Quiz History */}
                     <div className="card overflow-hidden rounded-2xl">
                         <div className="p-6 border-b border-[var(--card-border)] flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <Clock size={16} className="text-cyan-500" />
+                                <Clock size={16} className="text-[#289B7D]" />
                                 <h3 className="text-sm font-bold text-[var(--foreground)]">Recent Quizzes</h3>
                             </div>
-                            <Link to="/dashboard/quizzes" className="text-xs font-medium text-indigo-500 hover:text-indigo-400 flex items-center gap-1">
+                            <Link to="/dashboard/quizzes" className="text-xs font-medium text-[#163B34] hover:text-[#289B7D] flex items-center gap-1">
                                 View All <ChevronRight size={12} />
                             </Link>
                         </div>
@@ -254,9 +247,9 @@ export default function UserDashboard() {
                                     <div key={i} className="p-5 flex items-center justify-between hover:bg-[var(--muted-bg)] transition-colors group">
                                         <div className="flex items-center gap-4">
                                             <div className={`w-10 h-10 rounded-xl border flex items-center justify-center text-lg ${
-                                                res.percentage >= 80 ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20' :
-                                                res.percentage >= 60 ? 'bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200 dark:border-indigo-500/20' :
-                                                'bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/20'
+                                                res.percentage >= 80 ? 'bg-emerald-50 border-emerald-200' :
+                                                res.percentage >= 60 ? 'bg-[#EAF5F2] border-[#D4EBE5]' :
+                                                'bg-red-50 border-red-200'
                                             }`}>
                                                 {res.percentage >= 80 ? '🏆' : res.percentage >= 60 ? '✅' : '📚'}
                                             </div>
@@ -273,7 +266,7 @@ export default function UserDashboard() {
                                             <div className="text-right">
                                                 <p className={`text-lg font-display font-bold ${
                                                     res.percentage >= 80 ? 'text-emerald-500' :
-                                                    res.percentage >= 60 ? 'text-indigo-500' :
+                                                    res.percentage >= 60 ? 'text-[#163B34]' :
                                                     'text-red-500'
                                                 }`}>{res.percentage}%</p>
                                                 <p className="text-[10px] text-[var(--foreground-muted)] font-medium">{res.score}/{res.total}</p>
