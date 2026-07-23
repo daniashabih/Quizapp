@@ -1,5 +1,6 @@
 {
-  "buildCommand": "npx prisma generate && cd api && npm install",
+  "buildCommand": "npx prisma generate && cd api && npm install && cd .. && npm run build",
+  "outputDirectory": "dist",
   "installCommand": "npm install",
   "functions": {
     "api/index.js": {
