@@ -1,6 +1,10 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+
+// Configure axios defaults at module scope
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || '/api';
 
 const AuthContext = createContext();
 
@@ -10,9 +14,6 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Configure axios defaults
-    axios.defaults.baseURL = import.meta.env.VITE_API_URL || '/api';
-
     useEffect(() => {
         const checkLoggedIn = async () => {
             const token = localStorage.getItem('token');
@@ -21,7 +22,7 @@ export const AuthProvider = ({ children }) => {
                 try {
                     const res = await axios.get('/auth/me');
                     setUser(res.data);
-                } catch (error) {
+                } catch {
                     localStorage.removeItem('token');
                     delete axios.defaults.headers.common['Authorization'];
                 }

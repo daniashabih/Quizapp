@@ -62,9 +62,8 @@ export default function SelectLanguage() {
         };
     }, []);
 
-    const getIcon = (name) => {
-        const n = name.toLowerCase();
-        return { icon: Code2, color: 'text-[#289B7D]', bg: 'bg-[#EAF5F2]', border: 'border-[#D4EBE5]', hoverBorder: 'hover:border-[#289B7D]', glow: 'hover:shadow-[0_0_20px_rgba(22,59,52,0.1)]' };
+    const getIcon = () => {
+        return { icon: Code2, color: 'text-[#289B7D]', bg: 'bg-[#EAF5F2]', border: 'border-[#D4EBE5]' };
     };
 
     const formattedActiveNow = activeNow === null ? '...' : new Intl.NumberFormat().format(activeNow);
@@ -119,7 +118,7 @@ export default function SelectLanguage() {
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {categories.map((cat) => {
-                        const { icon: Icon, color, bg, border, hoverBorder, glow } = getIcon(cat.name);
+                        const { icon: Icon, color, bg, border } = getIcon();
                         return (
                             <button
                                 key={cat.id}

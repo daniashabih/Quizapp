@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Trophy, Home, RotateCcw, Download, CheckCircle2, XCircle, Clock, Award, BarChart3, Sparkles, Linkedin } from "lucide-react";
+import { Home, RotateCcw, Download, CheckCircle2, XCircle, Clock, BarChart3, Sparkles, Linkedin } from "lucide-react";
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
@@ -15,6 +15,24 @@ export default function Result() {
     const secs = timeTaken % 60;
     const circumference = 2 * Math.PI * 60;
     const offset = circumference - (animateScore / 100) * circumference;
+
+    const [confettiParticles, setConfettiParticles] = useState([]);
+
+    useEffect(() => {
+        const t = setTimeout(() => {
+            setConfettiParticles(Array.from({ length: 50 }).map((_, i) => ({
+                id: i,
+                left: `${Math.random() * 100}%`,
+                color: ['#22C55E', '#289B7D', '#163B34', '#22C55E', '#EF4444'][i % 5],
+                duration: 2 + Math.random() * 3,
+                delay: Math.random() * 2,
+                rotation: Math.random() * 360,
+                width: 4 + Math.random() * 6,
+                height: 4 + Math.random() * 6,
+            })));
+        }, 0);
+        return () => clearTimeout(t);
+    }, []);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -34,7 +52,7 @@ export default function Result() {
             const timer = setTimeout(() => setShowConfetti(false), 4000);
             return () => clearTimeout(timer);
         }
-    }, []);
+    }, [showConfetti]);
 
     const grade = passed
         ? { label: percentage >= 90 ? "Exceptional" : "Commendable", color: "#22C55E", gradient: "from-[#22C55E] to-[#16A34A]" }
@@ -44,14 +62,14 @@ export default function Result() {
         <div className="min-h-screen bg-[var(--page-bg)] flex flex-col">
             {showConfetti && passed && (
                 <div className="fixed inset-0 z-50 pointer-events-none overflow-hidden">
-                    {Array.from({ length: 50 }).map((_, i) => (
-                        <div key={i} className="absolute w-2 h-2 rounded-sm"
+                    {confettiParticles.map(p => (
+                        <div key={p.id} className="absolute rounded-sm"
                             style={{
-                                left: `${Math.random() * 100}%`, top: '-2%',
-                                backgroundColor: ['#22C55E', '#289B7D', '#163B34', '#22C55E', '#EF4444'][i % 5],
-                                animation: `confetti-fall ${2 + Math.random() * 3}s linear ${Math.random() * 2}s infinite`,
-                                transform: `rotate(${Math.random() * 360}deg)`,
-                                width: `${4 + Math.random() * 6}px`, height: `${4 + Math.random() * 6}px`,
+                                left: p.left, top: '-2%',
+                                backgroundColor: p.color,
+                                animation: `confetti-fall ${p.duration}s linear ${p.delay}s infinite`,
+                                transform: `rotate(${p.rotation}deg)`,
+                                width: `${p.width}px`, height: `${p.height}px`,
                             }} />
                     ))}
                 </div>

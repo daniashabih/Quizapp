@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Award, Download, ExternalLink, Linkedin, ChevronRight, Search, Loader2, FileText, Lock, CheckCircle2 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { Award, Download, ExternalLink, Linkedin, Search, FileText, Lock, CheckCircle2 } from 'lucide-react';
 
 const mockCertificates = [
     { id: 'CERT-001', tech: 'JavaScript', level: 'Advanced', score: 92, date: '2026-06-15', issued: true },
@@ -12,7 +11,6 @@ const mockCertificates = [
 ];
 
 export default function Certificates() {
-    const { user } = useAuth();
     const [searchQuery, setSearchQuery] = useState('');
     const [certList] = useState(mockCertificates);
 

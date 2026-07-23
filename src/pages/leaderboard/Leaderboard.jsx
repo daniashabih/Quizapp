@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Trophy, Medal, Star, Award, ChevronRight, Search, Users } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 
@@ -24,8 +23,6 @@ export default function Leaderboard() {
     const filtered = users.filter(u =>
         u.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-
-    const top3 = users.slice(0, 3);
 
     return (
         <div className="min-h-screen bg-[var(--page-bg)] flex flex-col">

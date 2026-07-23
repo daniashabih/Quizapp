@@ -1,10 +1,9 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useEffect } from 'react';
 
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-    const [theme] = useState('light');
-
     useEffect(() => {
         const root = window.document.documentElement;
         root.classList.remove('dark');

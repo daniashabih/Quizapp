@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { Download, Share2, Linkedin, ArrowLeft, Check, Award, Sparkles } from 'lucide-react';
+import { Download, Linkedin, ArrowLeft } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { useAuth } from '../../context/AuthContext';
@@ -13,7 +13,7 @@ export default function CertificateView() {
     const certRef = useRef(null);
     const [downloaded, setDownloaded] = useState(false);
 
-    const certId = `HB-${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
+    const [certId] = useState(() => `HB-${Math.random().toString(36).substr(2, 8).toUpperCase()}`);
     const issueDate = new Date().toLocaleDateString('en-US', {
         year: 'numeric', month: 'long', day: 'numeric'
     });

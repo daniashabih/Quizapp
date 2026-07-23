@@ -23,6 +23,7 @@ export default function Navbar() {
         return () => window.removeEventListener('scroll', onScroll);
     }, []);
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { setIsOpen(false); setUserMenuOpen(false); }, [location.pathname]);
 
     const isActive = (path) => path === '/' ? location.pathname === '/' : location.pathname.startsWith(path);

@@ -75,7 +75,7 @@ export default function Settings() {
         { id: 'danger', icon: Trash2, label: 'Danger Zone' },
     ];
 
-    const ActiveSection = () => {
+    const renderActiveSection = () => {
         switch (activeSection) {
             case 'profile':
                 return (
@@ -307,7 +307,7 @@ export default function Settings() {
                 {/* Content */}
                 <div className="lg:col-span-3">
                     <div className="card p-6 lg:p-8 rounded-2xl">
-                        <ActiveSection />
+                        {renderActiveSection()}
                     </div>
                 </div>
             </div>

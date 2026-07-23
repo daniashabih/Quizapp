@@ -13,7 +13,7 @@ const AdminDashboard = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
 
-    const [activeTab, setActiveTab] = useState('questions');
+    const activeTab = 'questions';
     const [questions, setQuestions] = useState([]);
     const [categories, setCategories] = useState([]);
     const [allUsers, setAllUsers] = useState([]);
@@ -36,12 +36,6 @@ const AdminDashboard = () => {
     const [newCategory, setNewCategory] = useState('');
     const [editingCategoryId, setEditingCategoryId] = useState(null);
 
-    useEffect(() => {
-        if (!user || user.role !== 'admin') { navigate('/'); return; }
-        fetchData();
-        if (activeTab === 'users') fetchUsers();
-    }, [user, navigate, activeTab]);
-
     const fetchData = async () => {
         try {
             const [qRes, cRes] = await Promise.all([axios.get('/questions'), axios.get('/categories')]);
@@ -57,6 +51,16 @@ const AdminDashboard = () => {
             setAllUsers(res.data);
         } catch { /* silent */ }
     };
+
+    useEffect(() => {
+        if (!user || user.role !== 'admin') { navigate('/'); return; }
+        const t = setTimeout(() => {
+            fetchData();
+            if (activeTab === 'users') fetchUsers();
+        }, 0);
+        return () => clearTimeout(t);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user, navigate, activeTab]);
 
     const openQuestionModal = (question = null) => {
         if (question) {

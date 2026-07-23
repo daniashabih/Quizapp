@@ -20,7 +20,12 @@ export default function UserDashboard() {
     const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
-        if (user) setEditData({ name: user.name, email: user.email });
+        if (user) {
+            const t = setTimeout(() => {
+                setEditData({ name: user.name, email: user.email });
+            }, 0);
+            return () => clearTimeout(t);
+        }
     }, [user]);
 
     useEffect(() => {

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import {
     LayoutDashboard, Code2, Trophy, Award, User, Settings as SettingsIcon,
-    LogOut, Menu, X, Bell, Search, ShieldCheck, ChevronLeft, ChevronRight
+    LogOut, Menu, X, Bell, Search, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import BrandLogo from '../components/BrandLogo';
@@ -27,6 +27,7 @@ export default function DashboardLayout() {
     const { user, logout } = useAuth();
 
     useEffect(() => { if (!user) navigate('/login'); }, [user, navigate]);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { setMobileOpen(false); setNotifOpen(false); }, [location.pathname]);
     useEffect(() => {
         const h = () => { if (window.innerWidth < 1024) setSidebarOpen(false); else setSidebarOpen(true); };

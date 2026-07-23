@@ -7,7 +7,6 @@ import {
     Flag, Layers, AlertCircle, HelpCircle, ChevronLeft, ChevronRight,
     ListOrdered, Send, Loader2
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
 
 const difficultyColors = {
     beginner: { bg: 'bg-emerald-500', text: 'text-emerald-500', label: 'Beginner' },
@@ -16,7 +15,6 @@ const difficultyColors = {
 };
 
 const Quiz = () => {
-    const { user } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
     const selectedCategory = location.state?.category || location.state?.language;
@@ -34,31 +32,47 @@ const Quiz = () => {
     const [showFeedback, setShowFeedback] = useState(false);
     const [feedbackType, setFeedbackType] = useState(null);
     const [showConfirmSubmit, setShowConfirmSubmit] = useState(false);
-    const [startTime, setStartTime] = useState(Date.now());
+    const [startTime, setStartTime] = useState(() => Date.now());
 
     const normalizeValue = (val) => String(val || '').trim().replace(/\s+/g, ' ').toLowerCase();
 
     useEffect(() => {
-        setTimeLeft(60);
-        setShowFeedback(false);
-        setFeedbackType(null);
+        const t = setTimeout(() => {
+            setTimeLeft(60);
+            setShowFeedback(false);
+            setFeedbackType(null);
+        }, 0);
+        return () => clearTimeout(t);
     }, [currentIndex]);
 
-    useEffect(() => {
-        if (!loading && questions.length > 0 && !isSubmitted) {
-            const timer = setInterval(() => {
-                setTimeLeft((prev) => {
-                    if (prev <= 1) {
-                        clearInterval(timer);
-                        handleAutoAdvance();
-                        return 0;
-                    }
-                    return prev - 1;
-                });
-            }, 1000);
-            return () => clearInterval(timer);
+    const handleSubmitQuiz = async () => {
+        let score = 0;
+        questions.forEach(q => {
+            const idx = selectedAnswers[q.id];
+            if (idx !== undefined) {
+                let opts = q.options;
+                if (typeof opts === 'string') { try { opts = JSON.parse(opts); } catch { opts = []; } }
+                if (opts[idx] === q.correct_answer) score++;
+            }
+        });
+        const percentage = questions.length > 0 ? Math.round((score / questions.length) * 100) : 0;
+        const timeTaken = Math.round((Date.now() - startTime) / 1000);
+
+        try {
+            await axios.post('/results/save', {
+                category: selectedCategory,
+                score,
+                total: questions.length,
+                percentage,
+                difficulty
+            });
+        } catch (error) {
+            console.error("Error saving result:", error);
         }
-    }, [loading, questions, isSubmitted, currentIndex]);
+
+        setIsSubmitted(true);
+        navigate('/quiz/result', { state: { score, total: questions.length, percentage, category: selectedCategory, difficulty, timeTaken } });
+    };
 
     const handleAutoAdvance = () => {
         const currentQ = questions[currentIndex];
@@ -76,6 +90,23 @@ const Quiz = () => {
             }, 1000);
         }
     };
+
+    useEffect(() => {
+        if (!loading && questions.length > 0 && !isSubmitted) {
+            const timer = setInterval(() => {
+                setTimeLeft((prev) => {
+                    if (prev <= 1) {
+                        clearInterval(timer);
+                        handleAutoAdvance();
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+            return () => clearInterval(timer);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [loading, questions, isSubmitted, currentIndex]);
 
     useEffect(() => {
         if (!selectedCategory) {
@@ -135,35 +166,6 @@ const Quiz = () => {
             else newSet.add(questionId);
             return newSet;
         });
-    };
-
-    const handleSubmitQuiz = async () => {
-        let score = 0;
-        questions.forEach(q => {
-            const idx = selectedAnswers[q.id];
-            if (idx !== undefined) {
-                let opts = q.options;
-                if (typeof opts === 'string') { try { opts = JSON.parse(opts); } catch { opts = []; } }
-                if (opts[idx] === q.correct_answer) score++;
-            }
-        });
-        const percentage = questions.length > 0 ? Math.round((score / questions.length) * 100) : 0;
-        const timeTaken = Math.round((Date.now() - startTime) / 1000);
-
-        try {
-            await axios.post('/results/save', {
-                category: selectedCategory,
-                score,
-                total: questions.length,
-                percentage,
-                difficulty
-            });
-        } catch (error) {
-            console.error("Error saving result:", error);
-        }
-
-        setIsSubmitted(true);
-        navigate('/quiz/result', { state: { score, total: questions.length, percentage, category: selectedCategory, difficulty, timeTaken } });
     };
 
     if (loading) {
