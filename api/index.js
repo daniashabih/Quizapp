@@ -51,8 +51,22 @@ app.get('/', (req, res) => {
 
 // Global Error Handler
 app.use((err, req, res, _next) => {
-    console.error(err.stack);
-    res.status(500).json({ message: 'Something went wrong!' });
+    console.error('=== ERROR ===');
+    console.error('Message:', err.message);
+    console.error('Stack:', err.stack);
+    console.error('URL:', req.originalUrl);
+    console.error('Method:', req.method);
+    
+    // Log Prisma-specific errors with more detail
+    if (err.code && err.code.startsWith('P')) {
+        console.error('Prisma Error Code:', err.code);
+        console.error('Prisma Error Meta:', JSON.stringify(err.meta, null, 2));
+    }
+
+    res.status(err.status || 500).json({ 
+        message: err.message || 'Something went wrong!',
+        ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    });
 });
 
 // --- Start server (local) or export (Vercel) ---

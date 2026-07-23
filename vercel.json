@@ -1,4 +1,11 @@
 {
+  "buildCommand": "cd .. && npx prisma generate && cd api && npm install",
+  "installCommand": "npm install",
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "api/**"
+    }
+  },
   "rewrites": [
     {
       "source": "/api/(.*)",
