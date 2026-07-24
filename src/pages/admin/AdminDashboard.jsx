@@ -225,7 +225,7 @@ const AdminDashboard = () => {
                     </h1>
                     <p className="text-sm text-[var(--foreground-muted)] mt-1">Manage questions, categories, and users.</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                     <div className="relative">
                         <button onClick={() => setIsExportDropdownOpen(!isExportDropdownOpen)} className="btn-secondary text-sm">
                             <Download size={14} /> Export <ChevronDown size={12} />
@@ -256,7 +256,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
                 {stats.map(({ label, value, icon: Icon, gradient }) => (
                     <div key={label} className="card p-5 rounded-2xl flex items-center gap-4">
                         <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-lg`}>

@@ -183,19 +183,27 @@ export default function Settings() {
                         </div>
                         <div className="grid grid-cols-3 gap-3">
                             {[
-                                { id: 'light', icon: Sun, label: 'Light', desc: 'Bright & clean' },
-                                { id: 'dark', icon: Moon, label: 'Dark', desc: 'Easy on eyes' },
-                                { id: 'system', icon: Monitor, label: 'System', desc: 'Follows device' },
+                                { id: 'light', icon: Sun, label: 'Light', desc: 'Bright & clean', available: true },
+                                { id: 'dark', icon: Moon, label: 'Dark', desc: 'Easy on eyes', available: false },
+                                { id: 'system', icon: Monitor, label: 'System', desc: 'Follows device', available: false },
                             ].map(opt => (
                                 <button
                                     key={opt.id}
-                                    onClick={() => setThemeMode(opt.id)}
-                                    className={`p-5 rounded-2xl border-2 text-center transition-all ${
+                                    onClick={() => opt.available && setThemeMode(opt.id)}
+                                    disabled={!opt.available}
+                                    className={`relative p-5 rounded-2xl border-2 text-center transition-all ${
                                         theme === opt.id
                                             ? 'border-[#163B34] bg-[#EAF5F2]'
-                                            : 'border-[var(--card-border)] hover:border-[#289B7D]'
+                                            : opt.available
+                                                ? 'border-[var(--card-border)] hover:border-[#289B7D]'
+                                                : 'border-[var(--card-border)] opacity-50 cursor-not-allowed'
                                     }`}
                                 >
+                                    {!opt.available && (
+                                        <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full bg-[var(--muted-bg)] border border-[var(--card-border)] text-[9px] font-bold text-[var(--foreground-muted)] uppercase tracking-wider">
+                                            Soon
+                                        </span>
+                                    )}
                                     <opt.icon size={24} className={`mx-auto mb-2 ${theme === opt.id ? 'text-[#163B34]' : 'text-[var(--foreground-muted)]'}`} />
                                     <p className="text-sm font-bold text-[var(--foreground)]">{opt.label}</p>
                                     <p className="text-[10px] text-[var(--foreground-muted)]">{opt.desc}</p>
@@ -204,7 +212,7 @@ export default function Settings() {
                         </div>
                         <div className="p-4 rounded-xl bg-[var(--muted-bg)] border border-[var(--card-border)]">
                             <p className="text-xs text-[var(--foreground-muted)]">
-                                Current: <strong className="text-[var(--foreground)] capitalize">{resolvedTheme}</strong> mode
+                                Current: <strong className="text-[var(--foreground)] capitalize">{resolvedTheme}</strong> mode — HangBug uses a clean white interface by design. Dark mode is on the roadmap.
                             </p>
                         </div>
                     </div>

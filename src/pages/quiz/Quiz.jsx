@@ -9,9 +9,9 @@ import {
 } from 'lucide-react';
 
 const difficultyColors = {
-    beginner: { bg: 'bg-emerald-500', text: 'text-emerald-500', label: 'Beginner' },
-    intermediate: { bg: 'bg-[#289B7D]', text: 'text-[#289B7D]', label: 'Intermediate' },
-    expert: { bg: 'bg-[#163B34]', text: 'text-[#163B34]', label: 'Expert' },
+    beginner: { badge: 'bg-emerald-50 text-emerald-600 border border-emerald-200', label: 'Beginner' },
+    intermediate: { badge: 'bg-[#EAF5F2] text-[#289B7D] border border-[#D4EBE5]', label: 'Intermediate' },
+    expert: { badge: 'bg-[#EAF5F2] text-[#163B34] border border-[#D4EBE5]', label: 'Expert' },
 };
 
 const Quiz = () => {
@@ -225,7 +225,7 @@ const Quiz = () => {
                         <div className="hidden sm:block">
                             <p className="text-sm font-bold text-[var(--foreground)]">{selectedCategory}</p>
                             <div className="flex items-center gap-2">
-                                <span className={`badge ${diffStyle.bg} ${diffStyle.text} text-[10px] px-2 py-0.5`}>
+                                <span className={`badge ${diffStyle.badge} text-[10px] px-2 py-0.5`}>
                                     {diffStyle.label}
                                 </span>
                                 <span className="text-[10px] text-[var(--foreground-muted)] font-medium">
@@ -282,7 +282,7 @@ const Quiz = () => {
                 <main className="flex-1 overflow-y-auto">
                     <div className="max-w-3xl mx-auto p-4 lg:p-8 pb-24">
                         <div className="sm:hidden flex items-center gap-2 mb-4">
-                            <span className={`badge ${diffStyle.bg} ${diffStyle.text} text-[10px]`}>{diffStyle.label}</span>
+                            <span className={`badge ${diffStyle.badge} text-[10px]`}>{diffStyle.label}</span>
                             <span className="text-xs text-[var(--foreground-muted)] font-medium">
                                 Q {currentIndex + 1}/{questions.length}
                             </span>

@@ -102,7 +102,7 @@ export default function SelectLevel() {
                                     </div>
 
                                     <div className="flex-1">
-                                        <h3 className={`text-xl font-display font-bold text-[var(--foreground)] mb-2 group-hover:${level.color} transition-colors`}>
+                                        <h3 className="text-xl font-display font-bold text-[var(--foreground)] mb-2 group-hover:text-[#163B34] transition-colors">
                                             {level.name}
                                         </h3>
                                         <p className="text-sm text-[var(--foreground-muted)] leading-relaxed">{level.desc}</p>
@@ -124,7 +124,7 @@ export default function SelectLevel() {
                                         </div>
                                     </div>
 
-                                    <div className={`btn bg-gradient-to-r ${level.gradient} text-white w-full justify-center text-sm py-3 rounded-xl font-semibold group-hover:-translate-y-0.5 transition-all duration-300 shadow-lg`}>
+                                    <div className={`inline-flex items-center gap-2 bg-gradient-to-r ${level.gradient} text-white w-full justify-center text-sm py-3 rounded-xl font-semibold group-hover:-translate-y-0.5 transition-all duration-300 shadow-lg`}>
                                         Start Challenge <ArrowRight size={15} />
                                     </div>
                                 </button>

@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import {
     ArrowRight, Code2, Target, Trophy, Zap, Users, BookOpen,
     Sparkles, Star, Award, BarChart3, Search,
-    ChevronDown, ChevronUp, Quote, Play, GraduationCap, BrainCircuit
+    ChevronDown, ChevronUp, Quote, Play, GraduationCap, BrainCircuit,
+    Linkedin, CheckCircle2, Download, QrCode
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
@@ -255,6 +256,84 @@ export default function Landing() {
                                 <p className="text-[10px] font-medium text-[#6B7280] uppercase tracking-wider">{tech.level}</p>
                             </Link>
                         ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Certificate Preview */}
+            <section className="py-20 lg:py-28 bg-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+                        <div className="flex-1 max-w-xl">
+                            <div className="badge-emerald mb-4">Certification</div>
+                            <h2 className="text-4xl lg:text-5xl font-display font-extrabold text-[#163B34] mb-4">
+                                Earn Certificates That <span className="text-gradient">Get You Hired</span>
+                            </h2>
+                            <p className="text-lg text-[#6B7280] leading-relaxed mb-8">
+                                Score 80%+ on any assessment to unlock a verified certificate — complete with a
+                                unique ID and QR code employers can validate in seconds.
+                            </p>
+                            <ul className="space-y-4 mb-8">
+                                {[
+                                    { icon: CheckCircle2, text: 'Unique verification ID & QR code on every certificate' },
+                                    { icon: Linkedin, text: 'One-click sharing to your LinkedIn profile' },
+                                    { icon: Download, text: 'Download as PDF for portfolios and applications' },
+                                ].map(({ icon: Icon, text }, i) => (
+                                    <li key={i} className="flex items-center gap-3">
+                                        <span className="w-8 h-8 rounded-lg bg-[#EAF5F2] border border-[#D4EBE5] flex items-center justify-center shrink-0">
+                                            <Icon size={15} className="text-[#163B34]" />
+                                        </span>
+                                        <span className="text-sm font-medium text-[#6B7280]">{text}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                            <Link to={user ? "/dashboard" : "/register"} className="btn-primary px-8 py-4 text-base">
+                                Start Earning <ArrowRight size={20} />
+                            </Link>
+                        </div>
+
+                        {/* Certificate mock */}
+                        <div className="flex-1 w-full max-w-lg animate-fade-up">
+                            <div className="card overflow-hidden rounded-3xl shadow-xl -rotate-1 hover:rotate-0 transition-transform duration-500">
+                                <div className="h-2 bg-gradient-to-r from-[#163B34] via-[#289B7D] to-[#53AF97]" />
+                                <div className="p-8 lg:p-10">
+                                    <div className="text-center mb-6">
+                                        <BrandLogo variant="mark" size="md" className="mx-auto mb-3" />
+                                        <p className="text-[10px] font-semibold text-[#6B7280] uppercase tracking-[0.2em] mb-1">
+                                            Certificate of Achievement
+                                        </p>
+                                        <h3 className="text-2xl font-display font-extrabold text-[#163B34]">JavaScript</h3>
+                                        <div className="badge-emerald mt-2 mx-auto text-[10px]">Advanced Level</div>
+                                    </div>
+                                    <div className="text-center mb-6">
+                                        <p className="text-xs text-[#6B7280] mb-1">This is to certify that</p>
+                                        <p className="text-xl font-display font-bold text-[#163B34] border-b-2 border-dashed border-gray-200 pb-1.5 inline-block">
+                                            Sarah Chen
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center justify-center gap-8 py-4 border-y border-gray-200 mb-6">
+                                        <div className="text-center">
+                                            <p className="text-xl font-display font-extrabold text-[#22C55E]">92%</p>
+                                            <p className="text-[9px] text-[#6B7280] font-semibold uppercase tracking-wider">Score</p>
+                                        </div>
+                                        <div className="w-px h-8 bg-gray-200" />
+                                        <div className="text-center">
+                                            <p className="text-xl font-display font-extrabold text-[#163B34]">Advanced</p>
+                                            <p className="text-[9px] text-[#6B7280] font-semibold uppercase tracking-wider">Level</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-[9px] font-bold text-[#6B7280] uppercase tracking-wider">Certificate ID</p>
+                                            <p className="text-xs font-mono font-bold text-[#163B34]">HB-8X2K4M9A</p>
+                                        </div>
+                                        <div className="w-12 h-12 rounded-lg bg-[#F7FAF9] border border-gray-200 flex items-center justify-center">
+                                            <QrCode size={24} className="text-[#163B34]" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
