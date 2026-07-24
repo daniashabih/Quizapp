@@ -4,12 +4,7 @@
   "installCommand": "npm install",
   "functions": {
     "api/index.js": {
-      "includeFiles": [
-        "api/**",
-        "node_modules/.prisma/client/**",
-        "node_modules/@prisma/client/**",
-        "prisma/**"
-      ]
+      "includeFiles": "{api/**,node_modules/.prisma/client/**,node_modules/@prisma/client/**,prisma/**}"
     }
   },
   "rewrites": [
