@@ -38,8 +38,8 @@ const register = async (req, res) => {
         });
 
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
+        console.error('Register Error:', error);
+        res.status(500).json({ message: 'Server error', error: error.message, stack: error.stack });
     }
 };
 
